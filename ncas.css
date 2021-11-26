@@ -1,0 +1,25 @@
+input{
+    margin: 0.2em;
+    font-size: 110%;
+    padding: 0.1em;
+    border-radius: 0.5em;
+    width: 3em;
+    text-align: center;
+}
+input[type=radio]{
+    margin-left: 0.1em;
+   
+    height: 1em;
+    
+}
+body{
+    background-color: black;
+    color: whitesmoke;
+}
+.diceType{
+    width: 20%;
+    text-align: right;
+}
+span.diceType{
+    text-align: left;
+}

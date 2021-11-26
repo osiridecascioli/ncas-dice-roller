@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>[0.0.1] Non Cedere al Sonno dice roller"</title>
+    <!--<link rel="shortcut icon" type="image/ico" href="css/images/favicon.jpg">-->
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0"
+    />
+    <link
+      id="MainCSS"
+      href="ncas.css?TAGID=0.0.1"
+      type="text/css"
+      rel="Stylesheet"
+    />
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 id="title">Salve risvegliato,</h1>
+    </div>
+    <div class="form">
+      <form id="ncasDiceRoller" name="ncasDiceRoller">
+        <div class="diceType">
+          <label for="discipline">Disciplina</label>
+          <input id="discipline" name="discipline" type="number" min="1" max="6" step="1" value="1" />
+        </div>
+        <div class="diceType">
+          <label for="madness">Pazzia</label>
+          <input id="madness" name="madness" type="number" min="1" max="6" step="1" value="2" />
+        </div>
+        <div class="diceType">
+          <label for="exhaustion">Sfinimento</label>
+          <input id="exhaustion" name="exhaustion" type="number" min="1" max="6" step="1" value="3" />
+        </div>
+        <div class="diceType">
+          <label for="pain">Dolore</label>
+          <input id="pain" name="pain" type="number" min="1" max="6" step="1" value="4" />
+        </div>
+        <div class="diceType">
+          <label for="assist">Aiuti</label>
+          <input id="assist" name="assist" type="number" min="1" max="6" step="1" value="5" />
+        </div>
+        <div class="diceType">
+          <span>Talento</span><br/>
+          <label for="talento_nessuno">nessuno</label>
+          <input id="talento_nessuno" name="etalent" type="radio" value="0" checked="true" />
+          <label for="talento_sfinimento">di Sfinimento</label>
+          <input id="talento_sfinimento" name="etalent" type="radio" value="1" />
+          <label for="talento_follia">di Follia</label>
+          <input id="talento_follia" name="etalent" type="radio" value="2" />
+        </div>
+        <div class="diceType">
+          <input id="roll" name="roll" type="submit" value="tira" />
+        </div>
+      </form>
+    </div>
+    <div id="footer">
+      <a href="https://www.bladesinthedark.it/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.
+    </div>
+  </body>
+  <script type="text/javascript" src="./ncas.js?TAGID=0.0.1"></script>
+</html>
