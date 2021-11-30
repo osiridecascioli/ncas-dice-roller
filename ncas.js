@@ -3,10 +3,11 @@ const form = document.forms[0];
 form.addEventListener("submit", function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    // do stuff
+    /*
     for (const formElement of formData) {
         //console.log(formElement);
     }
+    */
     getResults(formData);
 });
 
@@ -85,14 +86,15 @@ function getDominance(){
     o.dominance.attribute = "pain";
     o.dominance.value = o.pain[0]
 
-    getSingleDominance("exhaustion");
+    compareDominance("exhaustion");
 
-    getSingleDominance("madness");
+    compareDominance("madness");
 
-    getSingleDominance("discipline");
+    compareDominance("discipline");
 }
 
-function getSingleDominance(compare){
+function compareDominance(compare){
+    let actualD = o.dominance.attribute;
     if(o[compare].length < 1){
         //console.log("il comparato", compare, "è troppo corto");
         return;
@@ -111,11 +113,11 @@ function getSingleDominance(compare){
     }
 
     //equal case
-    let actualD = o.dominance.attribute;
     if (o[actualD+"Strenght"] > o[compare+"Strenght"] ){
-        //nulla da modificare
+        //il numero di dadi più alto è maggiore
         return;
     } else if (o[actualD+"Strenght"] < o[compare+"Strenght"] ){
+        //il numero di dadi più alto è minore
         o.dominance.attribute = compare;
         o.dominance.value = o[compare][0];
         return;
@@ -135,29 +137,35 @@ function getSingleDominance(compare){
         max++;
     };
     o.alert +="<br />Dominio da controllare a mano."
-    alert("copia");
 }
 
 function thisIsMad(newObj, actualD, compare){
     if (!newObj[actualD].length && !newObj[compare].length){
+        //le due serie di dadi sono vuote
         return true;
     }else if (newObj[actualD].length &&  !newObj[compare].length){
+        //la nuova serie di dadi è vuota 
         return true;
     }else if (!newObj[actualD].length && newObj[compare].length){
+        //la vecchia serie di dadi è vuota
         o.dominance.attribute = compare;
         o.dominance.value = o[compare][0];
         return true;
     }
     if (newObj[actualD][0] > newObj[compare][0]){
+        //il dado successivo vecchio è più alto
         return true;
     }else if (newObj[actualD][0] < newObj[compare][0]){
+        //il dado successivo nuovo è più alto
         o.dominance.attribute = compare;
         o.dominance.value = o[compare][0];
         return true;
     }
     if (getStrength(newObj[actualD]) > getStrength(newObj[compare])){
+        //il numero di dadi più alti vecchio è più alto
         return true;
     } else if (getStrength(newObj[actualD]) < getStrength(newObj[compare])){
+        //il numero di dadi più alti nuovi è più alto
         o.dominance.attribute = compare;
         o.dominance.value = o[compare][0];
         return true;
@@ -237,26 +245,6 @@ function dieRoll(formData){
     }
     //console.log("Dice: E"+o.exhaustion + "; form: "+formData.get("exhaustion"));
     parseName(formData, masterStat);
-}
-
-function sMax(){
-    let d = 0;
-    let m = 0;
-    let e = 0;
-    let p = 0;
-    if (o.discipline.length > 0){
-        d = o.discipline[0];
-    }
-    if (o.madness.length > 0){
-        m = o.madness[0];
-    }
-    if (o.exhaustion.length > 0){
-        e = o.exhaustion[0];
-    }
-    if (o.pain.length > 0){
-        p = o.pain[0];
-    }
-    return Math.max(d, m , e, p);
 }
 
 function parseName(formData, name){
