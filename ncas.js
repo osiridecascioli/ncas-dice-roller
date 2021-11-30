@@ -122,7 +122,7 @@ function displayTalent(){
 
 function displayDominance(){
     let d = getNcasE("dominance", "ncasDiceRoller");
-    d.innerHTML = "<p>" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
+    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
     d.innerHTML += o.resultTxt;
 }
 
