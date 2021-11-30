@@ -1,14 +1,52 @@
+
+const gunSpace = Gun(['https://gunjs.herokuapp.com/gun']).get('ncas-dice-roller');
+
+
+gunSpace.get('formData').on(
+    (gunValues) => {
+        
+        console.log('gunValues');
+        console.log(gunValues);
+
+        const formData = new FormData();
+        formData.append('discipline', gunValues.discipline);
+        formData.append('assist', gunValues.assist);
+        formData.append('exhaustion', gunValues.exhaustion);
+        formData.append('madness', gunValues.madness);
+        formData.append('pain', gunValues.pain);
+        formData.append('etalent', gunValues.etalent);
+
+        getResults(formData);
+    }
+)
+
+
 const form = document.forms[0];
 
 form.addEventListener("submit", function(event) {
     event.preventDefault();
     const formData = new FormData(this);
+
+    const gunValues = {
+        'discipline' : formData.get('discipline'),
+        'assist' : formData.get('assist'),
+        'exhaustion' : formData.get('exhaustion'),
+        'madness' : formData.get('madness'),
+        'pain' : formData.get('pain'),
+        'etalent' : formData.get('etalent')
+    }
+
+    console.dir(formData);
     /*
     for (const formElement of formData) {
         //console.log(formElement);
     }
     */
-    getResults(formData);
+    gunSpace.put({'formData' : gunValues });
+    
+    console.log( gunSpace.get('formData'));
+
+    //getResults(formData);
 });
 
 const dominance = {
@@ -103,7 +141,7 @@ function display(){
 }
 
 function displayWinner(){
-    let d = getNcasE("winner", "ncasDiceRoller");
+    let d = getNcasE("winner", "displayResult");
     d.innerHTML = o.winnerTxt;
 }
 
@@ -116,12 +154,12 @@ function displayDice(){
 }
 
 function displayTalent(){
-    let d = getNcasE("talent", "ncasDiceRoller");
+    let d = getNcasE("talent", "displayResult");
     d.innerHTML = o.etalentTxt;
 }
 
 function displayDominance(){
-    let d = getNcasE("dominance", "ncasDiceRoller");
+    let d = getNcasE("dominance", "displayResult");
     d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
     d.innerHTML += o.resultTxt;
 }

@@ -1,3 +1,12 @@
+input[type=text]{
+    margin: 0.2em;
+    font-size: 110%;
+    padding: 0.1em;
+    border-radius: 0.5em;
+    width: 9em;
+    text-align: center;
+}
+
 input{
     margin: 0.2em;
     font-size: 110%;
@@ -75,3 +84,20 @@ div.diceResult{
 .loser{
     color: brown;
 }
+
+a {
+    color:crimson;
+}
+
+.footer {
+    position: fixed;
+    min-height: 2rem;
+    padding: 0.5rem 0 0.5rem 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: whitesmoke;
+    color: black;
+    text-align: center;
+    vertical-align: center;
+  }
