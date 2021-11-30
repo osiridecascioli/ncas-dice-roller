@@ -17,12 +17,32 @@ body{
     color: whitesmoke;
 }
 .diceType{
-    width: 20%;
+    width: 25%;
     text-align: right;
+    padding:  0.2em;
 }
 span.diceType{
     text-align: left;
 }
 #footer{
    margin-top: 3em; 
+}
+div.diceResult{
+    display: inline-block;
+    width: 15%;
+}
+
+input[type=number]#exhaustion{
+    background-color: black;
+    color:white;
+}
+
+input[type=number]#madness{
+    background-color: red;
+    color:white;
+}
+
+input[type=number]#pain{
+    background-color:rebeccapurple;
+    color:white;
 }

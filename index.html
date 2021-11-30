@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <meta charset="utf-8" />
-    <title>[0.0.1] Non Cedere al Sonno dice roller"</title>
+    <title>[0.0.7] Non Cedere al Sonno dice roller"</title>
     <!--<link rel="shortcut icon" type="image/ico" href="css/images/favicon.jpg">-->
 
     <meta
@@ -11,7 +11,7 @@
     />
     <link
       id="MainCSS"
-      href="ncas.css?TAGID=0.0.6"
+      href="ncas.css?TAGID=0.0.7"
       type="text/css"
       rel="Stylesheet"
     />
@@ -24,25 +24,25 @@
     </div>
     <div class="form">
       <form id="ncasDiceRoller" name="ncasDiceRoller">
-        <div class="diceType">
+        <div class="diceType" id="disciplineDice">
           <label for="discipline">Disciplina</label>
           <input id="discipline" name="discipline" type="number" min="1" max="6" step="1" value="1" />
         </div>
-        <div class="diceType">
-          <label for="exhaustion">Sfinimento</label>
-          <input id="exhaustion" name="exhaustion" type="number" min="0" max="6" step="1" value="3" />
-        </div>
-        <div class="diceType">
-          <label for="madness">Pazzia</label>
-          <input id="madness" name="madness" type="number" min="0" max="6" step="1" value="2" />
-        </div>
-        <div class="diceType">
-          <label for="pain">Dolore</label>
-          <input id="pain" name="pain" type="number" min="1" max="6" step="1" value="3" />
-        </div>
-        <div class="diceType">
-          <label for="assist">Aiuti</label>
+        <div class="diceType" id="assistDice">
+          <label for="assist">Aiuto</label>
           <input id="assist" name="assist" type="number" min="0" max="6" step="1" value="0" />
+        </div>
+        <div class="diceType" id="exhaustionDice">
+          <label for="exhaustion">Sfinimento</label>
+          <input id="exhaustion" name="exhaustion" type="number" min="0" max="6" step="1" value="0" />
+        </div>
+        <div class="diceType" id="madnessDice">
+          <label for="madness">Pazzia</label>
+          <input id="madness" name="madness" type="number" min="0" max="6" step="1" value="0" />
+        </div>
+        <div class="diceType" id="painDice">
+          <label for="pain">Dolore</label>
+          <input id="pain" name="pain" type="number" min="1" max="6" step="1" value="1" />
         </div>
         <div class="diceType">
           <span>Talento di Sfinimento</span><br/>
@@ -62,5 +62,5 @@
       <a href="https://grumpybearstuff.com/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.
     </div>
   </body>
-  <script type="text/javascript" src="./ncas.js?TAGID=0.0.6"></script>
+  <script type="text/javascript" src="./ncas.js?TAGID=0.0.7"></script>
 </html>

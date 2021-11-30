@@ -18,12 +18,16 @@ const dominance = {
 const o = {
     discipline:[],
     disciplineStrenght:0,
+    disciplineTxt: "La Disciplina",
     madness:[],
     madnessStrenght:0,
+    madnessTxt: "La Pazzia",
     exhaustion:[],
     exhaustionStrenght:0,
+    exhaustionTxt: "Lo Sfinimento",
     pain:[],
     painStrenght:0,
+    painTxt: "Il Dolore",
     assist:[],
     assistStrenght:0,
     pSuccess:0,
@@ -64,42 +68,111 @@ function getResults(formData){
     resetData();
 
     dieRoll(formData);
-    
+
+    /*
+    o.discipline=[6];
+    o.disciplineStrenght=1;
+    o.madness=[5,4];
+    o.madnessStrenght=1;
+    o.exhaustion=[5,5,4];
+    o.exhaustionStrenght=2;
+    o.pain=[5,1,1];
+    o.painStrenght=1;
+    */
+
     getExhaustion(formData);
     
     getWinner();
 
     getDominance();
-    console.log("Disciplina", o.discipline);
-    console.log("Sfinimento", o.exhaustion);
-    console.log("Pazzia", o.madness);
-    console.log("Dolore", o.pain);
-    //console.log(o.alert,"Dominio", o.dominance.attribute);
-    //console.log("---");
-    //console.log(o);
+
     getTextRes();
-    console.log(o.resultTxt);
+
+    display();
+}
+
+function display(){
+    
+    displayDice();
+
+    displayWinner();
+
+    displayDominance();
+
+    displayTalent();
+}
+
+function displayWinner(){
+    let d = getNcasE("winner", "ncasDiceRoller");
+    d.innerHTML = o.winnerTxt;
+}
+
+function displayDice(){
+    for (const [key, value] of Object.entries(o.playerStat)) {
+        //console.log(key, value);
+        displayDie(value);
+    }
+    displayDie(o.masterStat);
+}
+
+function displayTalent(){
+    let d = getNcasE("talent", "ncasDiceRoller");
+    d.innerHTML = o.etalentTxt;
+}
+
+function displayDominance(){
+    let d = getNcasE("dominance", "ncasDiceRoller");
+    d.innerHTML = "<p>" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
+    d.innerHTML += o.resultTxt;
+}
+
+function displayDie(name){
+    let d = getNcasE(name ,"dice");
+    d.innerHTML = o[name];
+}
+
+function getNcasE(name, parent){
+    let d = document.getElementById(name+"_result");
+    if (d){
+        return d;
+    }
+    let dP = document.getElementById(parent);
+    if (document.getElementById(name) && document.getElementById(name).parentNode){
+        dP = document.getElementById(name).parentNode;
+    }
+    d = document.createElement('div');
+    d.id = name+"_result";
+    d.className = parent+"Result";
+    dP.appendChild(d);
+    //dP.insertBefore(d, dP.childNodes[0]);
+    return d;
 }
 
 function getTextRes(){
+    o.resultTxt += "<p>Indipendentemente dal "+o.winner+", la situazione ";
     switch (o.dominance.attribute){
-        case "dominance":
-            o.resultTxt = "indipendentemente dal "+o.winner+", la situazione rimane sotto controllo (o, per lo meno, non degenera ulteriormente nel caos) e l'uso delle proprie abilità e della propria concentrazione sono predominanti.";
-            o.resultTxt += "<br />permette al giocatore di ridurre di 1 il proprio valore di Sfinimento attuale, oppure recuperare una delle proprie Reazioni, liberando uno dei riquadri di Reazione sulla scheda (pagina 18). Il giocatore non è obbligato a sfruttare questo vantaggio: a volte vorrà tenere il proprio valore di Sfinimento così come ce l'ha al momento.";
+        case "discipline":
+            o.resultTxt += "rimane sotto controllo (o, per lo meno, non degenera ulteriormente nel caos) e l'uso delle proprie abilità e della propria concentrazione sono predominanti.";
+            o.resultTxt += "</p><p>";
+            o.resultTxt += "Riduci di 1 il valore di Sfinimento attuale, oppure recuperare una delle Reazioni, liberando uno dei riquadri di Reazione sulla scheda (pagina 18). Non sei obbligato a sfruttare questo vantaggio: a volte vorrai tenere il valore di Sfinimento così com'è al momento.";
             break;
         case "exhaustion":
-            o.resultTxt = "indipendentemente dal "+o.winner+", la situazione stressa le risorse del Protagonista e gli da un'occasione per affrontare la propria insonnia (ed il proprio disperato desiderio di riposare).";
-            o.resultTxt += "<br />incrementa ulteriormente lo Sfinimento di 1, anche quando il giocatore lo ha già incrementato volontariamente nello stesso tiro di dadi.";
+            o.resultTxt += "stressa le tue risorse e da un'occasione per affrontare l'insonnia (ed il disperato desiderio di riposare).";
+            o.resultTxt += "</p><p>";
+            o.resultTxt += "Incrementa ulteriormente lo Sfinimento di 1, anche quando lo hai già incrementato volontariamente nello stesso tiro di dadi.";
             break;
         case "madness":
-            o.resultTxt = "indipendentemente dal "+o.winner+", la situazione mette seriamente sotto sforzo psicologico o emotivo il Protagonista. Non solo: la situazione si fa inevitabilmente più caotica, e il Protagonista può trovarsi ad essere vittima dei rischi che si è preso.";
-            o.resultTxt += "<br />attiva una delle Reazioni del Protagonista. Il giocatore può scegliere quale dei propri riquadri di Reazione disponibili (vuoti) vuole riempire, permettendogli di scegliere tra la reazione Lotta o la reazione Fuggi.";
+            o.resultTxt += "ti mette seriamente sotto sforzo psicologico o emotivo. Non solo: la situazione si fa inevitabilmente più caotica, e puoi trovarti ad essere vittima dei rischi che ti sei preso.";
+            o.resultTxt += "</p><p>";
+            o.resultTxt += "Attiva una delle Reazioni. Puoi scegliere quale dei riquadri di Reazione disponibili (vuoti) vuoi riempire, permettendoti di scegliere tra la reazione Lotta o la reazione Fuggi.";
             break;
         case "pain":
-            o.resultTxt = "indipendentemente dal "+o.winner+", la situazione richiede che il Protagonista paghi un prezzo. In caso abbia perso il conflitto, la sconfitta stessa può essere un prezzo adeguato (a seconda di quanto schiacciante è la sconfitta), ma se invece ha vinto, quella vittoria esige qualcosa in cambio dal vincitore. Per farla breve, quando il Dolore Domina... beh, Domina il Dolore!";
-            o.resultTxt += "<br />aggiungi una Moneta di Disperazione alla Coppa della Disperazione (vedi oltre, a pagina 26, per saperne di più sulle Monete).";
+            o.resultTxt += "richiede che paghi un prezzo. In caso hai perso il conflitto, la sconfitta stessa può essere un prezzo adeguato (a seconda di quanto schiacciante è la sconfitta), ma se invece hai vinto, questa vittoria esige qualcosa in cambio dal vincitore. Per farla breve, quando il Dolore Domina... beh, Domina il Dolore!";
+            o.resultTxt += "</p><p>";
+            o.resultTxt += "Aggiungi una Moneta di Disperazione alla Coppa della Disperazione (vedi oltre, a pagina 26, per saperne di più sulle Monete).";
             break;
     }
+    o.resultTxt += "</p>";
 }
 
 function getDominance(){
@@ -111,9 +184,11 @@ function getDominance(){
     compareDominance("madness");
 
     compareDominance("discipline");
+    //console.log(o.dominance);
 }
 
 function compareDominance(compare){
+    //console.log(compare);
     if(o[compare].length < 1){
         //console.log("il comparato", compare, "è troppo corto");
         return;
@@ -134,16 +209,16 @@ function compareDominance(compare){
     let actualD = o.dominance.attribute;
     //equal case
     if (o[actualD+"Strenght"] > o[compare+"Strenght"] ){
-        //il numero di dadi più alto è maggiore
+        //console.log("il numero di dadi più alto è maggiore");
         return;
     } else if (o[actualD+"Strenght"] < o[compare+"Strenght"] ){
-        //il numero di dadi più alto è minore
+        //console.log("il numero di dadi più alto è minore");
         o.dominance.attribute = compare;
         o.dominance.value = o[compare][0];
         return;
     } 
     
-    //this gonna be difficult
+    //console.log("this gonna be difficult");
     let max = 0;
     let newObj = {};
     newObj[actualD] = removeUpper(o[actualD]);
@@ -156,6 +231,7 @@ function compareDominance(compare){
         newObj[compare] = removeUpper(newObj[compare]);
         max++;
     };
+    //console.log("Dominio da controllare a mano");
     o.dominance.attribute +="<br />Dominio da controllare a mano.";
     o.dominance.value = 0;
 }
@@ -235,6 +311,7 @@ function getWinner(){
         o.winnerTxt += "perde ";
     }
     o.winnerTxt = o.winnerTxt + o.pSuccess + " a " + o.mSuccess + ";";
+    
     //console.log(o.winner);
 }
 
@@ -243,18 +320,19 @@ function getExhaustion(formData){
     if (etalent == 0){
         return;
     }
-    if (Number(formData.get("exhaustion")) < 1){
+    let ext = Number(formData.get("exhaustion"));
+    if (ext < 1){
         o.etalentTxt = "<br />Non puoi usare il Talento di Sfinimento senza avere Sfinimento.";
         return;
     }
     if (etalent == 1){
-        if (o.pSuccess < o.exhaustion){
-            o.pSuccess = o.exhaustion;
+        if (o.pSuccess < ext){
+            o.pSuccess = ext;
         }
-        o.etalentTxt = "Uso Minore. Minimo "+o.exhaustion+" successi.";
+        o.etalentTxt = "Uso Minore. Minimo "+ext+" successi.";
     } else if (etalent == 2){
-        o.pSuccess = o.pSuccess + o.exhaustion;
-        o.etalentTxt = "Uso Maggiore. +"+o.exhaustion+" successi.";
+        o.pSuccess = o.pSuccess + etalent;
+        o.etalentTxt = "Uso Maggiore. +"+ext+" successi.";
     }
     //console.log(etalentTxt);
 }
