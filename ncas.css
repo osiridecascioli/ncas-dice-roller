@@ -23,6 +23,9 @@ body{
     width: 5em;
     display: inline-block;
 }
+.diceType.radio label{
+    width: auto;
+}
 span.diceType{
     text-align: left;
 }
