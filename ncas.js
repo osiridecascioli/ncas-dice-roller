@@ -28,17 +28,37 @@ const o = {
     assistStrenght:0,
     pSuccess:0,
     mSuccess:0,
-    etalent:0,
-    etalent_effect:"",
+    etalentTxt:"",
     winner:"",
     winnerTxt: "",
     alert:"",
     dominance: dominance,
-    resultTxt: ""
+    resultTxt: "",
+    playerStat: ["discipline", "madness", "exhaustion", "assist"],
+    masterStat: "pain"
 };
 
-const playerStat = ["discipline", "madness", "exhaustion", "assist"];
-const masterStat = "pain";
+function resetData(){
+    o.discipline=[];
+    o.disciplineStrenght=0;
+    o.madness=[];
+    o.madnessStrenght=0;
+    o.exhaustion=[];
+    o.exhaustionStrenght=0;
+    o.pain=[];
+    o.painStrenght=0;
+    o.assist=[];
+    o.assistStrenght=0;
+    o.pSuccess=0;
+    o.mSuccess=0;
+    o.etalentTxt="";
+    o.winner="";
+    o.winnerTxt="";
+    o.alert="";
+    o.dominance.attribute="";
+    o.dominance.value=0;
+    o.resultTxt = "";
+}
 
 function getResults(formData){
     resetData();
@@ -94,7 +114,6 @@ function getDominance(){
 }
 
 function compareDominance(compare){
-    let actualD = o.dominance.attribute;
     if(o[compare].length < 1){
         //console.log("il comparato", compare, "è troppo corto");
         return;
@@ -112,6 +131,7 @@ function compareDominance(compare){
         return;
     }
 
+    let actualD = o.dominance.attribute;
     //equal case
     if (o[actualD+"Strenght"] > o[compare+"Strenght"] ){
         //il numero di dadi più alto è maggiore
@@ -128,7 +148,7 @@ function compareDominance(compare){
     let newObj = {};
     newObj[actualD] = removeUpper(o[actualD]);
     newObj[compare] = removeUpper(o[compare]);
-    while (max < 6){
+    while (max < 6){ //6 è un numero arbitrario
         if (thisIsMad(newObj, actualD, compare)){
             return;
         }
@@ -136,7 +156,8 @@ function compareDominance(compare){
         newObj[compare] = removeUpper(newObj[compare]);
         max++;
     };
-    o.alert +="<br />Dominio da controllare a mano."
+    o.dominance.attribute +="<br />Dominio da controllare a mano.";
+    o.dominance.value = 0;
 }
 
 function thisIsMad(newObj, actualD, compare){
@@ -185,7 +206,7 @@ function removeUpper(arr){
             arr.sort().reverse();
             return aN.reverse();
         }
-        aN.push(arr[i])
+        aN.push(arr[i]);
     }
 }
 
@@ -196,8 +217,9 @@ function getStrength(n){
     }
     let m = 0;
     for (let i = 0; i < n.length; i++) {
-        if (n[i] < n[0])
+        if (n[i] < n[0]){
             return m;
+        }
         m++;
     }
     return m;
@@ -217,34 +239,33 @@ function getWinner(){
 }
 
 function getExhaustion(formData){
-    o.etalent = Number(formData.get("etalent"));
-    if (o.etalent < 1){
+    let etalent = Number(formData.get("etalent"));
+    if (etalent == 0){
         return;
     }
-    let exNum = Number(formData.get("exhaustion"));
-    if (o.exNum < 1){
-        o.alert += "<br />Non puoi usare il Talento Minore di Sfinimento senza avere Sfinimento.";
+    if (Number(formData.get("exhaustion")) < 1){
+        o.etalentTxt = "<br />Non puoi usare il Talento di Sfinimento senza avere Sfinimento.";
         return;
     }
-    if (o.etalent == 1){
+    if (etalent == 1){
         if (o.pSuccess < o.exhaustion){
             o.pSuccess = o.exhaustion;
         }
-        o.etalent_effect = "Uso Minore. Minimo "+o.exhaustion+" successi.";
-    } else if (o.etalent == 2){
+        o.etalentTxt = "Uso Minore. Minimo "+o.exhaustion+" successi.";
+    } else if (etalent == 2){
         o.pSuccess = o.pSuccess + o.exhaustion;
-        o.etalent_effect = "Uso Maggiore. +"+o.exhaustion+" successi.";
+        o.etalentTxt = "Uso Maggiore. +"+o.exhaustion+" successi.";
     }
-    //console.log(etalent_effect);
+    //console.log(etalentTxt);
 }
 
 function dieRoll(formData){
-    for (let i = 0; i < playerStat.length; i++) {
-        parseName(formData, playerStat[i]);
+    for (let i = 0; i < o.playerStat.length; i++) {
+        parseName(formData, o.playerStat[i]);
         //console.log("Dice: "+playerStat[i] + "; form: "+formData.get(playerStat[i]));
     }
     //console.log("Dice: E"+o.exhaustion + "; form: "+formData.get("exhaustion"));
-    parseName(formData, masterStat);
+    parseName(formData, o.masterStat);
 }
 
 function parseName(formData, name){
@@ -258,10 +279,9 @@ function getResult(name, token){
     }
     //console.log("getResult name: "+name+"; token: "+token+";")
     let results = [];
-    let maxN = 0;
     for (let i = 0; i < token; i++) {
         let n = Rd6();
-        getSuccess(name, n);
+        setSuccess(name, n);
         //console.log("getRndInteger name: "+name+"; token: "+n+";");
         results.push(n);
     }
@@ -271,11 +291,11 @@ function getResult(name, token){
     return results;
 }
 
-function getSuccess(name, n){
+function setSuccess(name, n){
     if ( n > 3)
         return;
 
-    if ( playerStat.includes(name)){
+    if ( o.playerStat.includes(name)){
         o.pSuccess++; 
     } else if (name == "pain"){
         o.mSuccess++;
@@ -288,27 +308,4 @@ function Rd6(){
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
-}
-
-function resetData(){
-    o.discipline=[];
-    o.disciplineStrenght=0;
-    o.madness=[];
-    o.madnessStrenght=0;
-    o.exhaustion=[];
-    o.exhaustionStrenght=0;
-    o.pain=[];
-    o.painStrenght=0;
-    o.assist=[];
-    o.assistStrenght=0;
-    o.pSuccess=0;
-    o.mSuccess=0;
-    o.etalent=0;
-    o.etalent_effect="";
-    o.winner="";
-    o.winnerTxt="";
-    o.alert="";
-    o.dominance.attribute="";
-    o.dominance.value=0;
-    o.resultTxt = "";
 }

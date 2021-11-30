@@ -23,3 +23,6 @@ body{
 span.diceType{
     text-align: left;
 }
+#footer{
+   margin-top: 3em; 
+}
