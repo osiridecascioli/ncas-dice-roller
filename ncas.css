@@ -64,3 +64,14 @@ div.diceResult{
     border-color: grey;
     border-style: outset;
 }
+
+.winning{
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.winner{
+    color:greenyellow;
+}
+.loser{
+    color: brown;
+}

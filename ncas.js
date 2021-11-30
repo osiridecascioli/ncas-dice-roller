@@ -302,15 +302,15 @@ function getStrength(n){
 }
 
 function getWinner(){
-    o.winnerTxt = "Il giocatore ";
+    o.winnerTxt = "Il giocatore <span class=\"winning ";
     if (o.pSuccess >= o.mSuccess){
         o.winner = "successo";
-        o.winnerTxt += "vince ";
+        o.winnerTxt += "winner\">vince ";
     }else{
         o.winner = "fallimento";
-        o.winnerTxt += "perde ";
+        o.winnerTxt += "loser\">perde ";
     }
-    o.winnerTxt = o.winnerTxt + o.pSuccess + " a " + o.mSuccess + ";";
+    o.winnerTxt = o.winnerTxt + "</span>" + o.pSuccess + " a " + o.mSuccess + ";";
     
     //console.log(o.winner);
 }
