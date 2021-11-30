@@ -2,25 +2,6 @@
 const gunSpace = Gun(['https://gunjs.herokuapp.com/gun']).get('ncas-dice-roller');
 
 
-gunSpace.get('formData').on(
-    (gunValues) => {
-        
-        console.log('gunValues');
-        console.log(gunValues);
-
-        const formData = new FormData();
-        formData.append('discipline', gunValues.discipline);
-        formData.append('assist', gunValues.assist);
-        formData.append('exhaustion', gunValues.exhaustion);
-        formData.append('madness', gunValues.madness);
-        formData.append('pain', gunValues.pain);
-        formData.append('etalent', gunValues.etalent);
-
-        getResults(formData);
-    }
-)
-
-
 const form = document.forms[0];
 
 form.addEventListener("submit", function(event) {
@@ -42,7 +23,7 @@ form.addEventListener("submit", function(event) {
         //console.log(formElement);
     }
     */
-    gunSpace.put({'formData' : gunValues });
+    gunSpace.put(gunValues);
     
     console.log( gunSpace.get('formData'));
 
@@ -425,3 +406,21 @@ function Rd6(){
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
+
+gunSpace.on(
+    (gunValues) => {
+        
+        console.log('gunValues');
+        console.log(gunValues);
+
+        const formData = new FormData();
+        formData.append('discipline', gunValues.discipline);
+        formData.append('assist', gunValues.assist);
+        formData.append('exhaustion', gunValues.exhaustion);
+        formData.append('madness', gunValues.madness);
+        formData.append('pain', gunValues.pain);
+        formData.append('etalent', gunValues.etalent);
+
+        getResults(formData);
+    }
+)
