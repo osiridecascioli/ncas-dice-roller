@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <meta charset="utf-8" />
-    <title>[0.0.11] Non Cedere al Sonno dice roller"</title>
+    <title>[0.0.11] Non Cedere al Sonno dice roller</title>
     <!--<link rel="shortcut icon" type="image/ico" href="css/images/favicon.jpg">-->
 
     <meta
@@ -15,34 +15,38 @@
       type="text/css"
       rel="Stylesheet"
     />
+    <script type="text/javascript" src="./ncas.js?TAGID=0.0.11"></script>
+
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
   </head>
 
   <body>
-    <div id="main">
-      <h1 id="title">Salve risvegliato,</h1>
-    </div>
-    <div class="form">
+    <h1>Salve risvegliato,</h1>
+    <div id="formBlock" class="displayBlock">
       <form id="ncasDiceRoller" name="ncasDiceRoller">
+        <div class="diceType" id="nameZone">
+          <label for="name">Nome</label>
+          <input id="name" name="name" class="name" type="text" value="Ozzy" />
+        </div>
         <div class="diceType" id="disciplineDice">
           <label for="discipline">Disciplina</label>
-          <input id="discipline" name="discipline" class="discipline" type="number" min="1" max="6" step="1" value="1" />
+          <input type="button" value="-" /><input id="discipline" name="discipline" class="discipline" type="number" min="1" max="6" step="1" value="1" /><input type="button" value="+" />
         </div>
         <div class="diceType" id="assistDice">
           <label for="assist">Aiuto</label>
-          <input id="assist" name="assist" class="assist" type="number" min="0" max="6" step="1" value="0" />
+          <input type="button" value="-" /><input id="assist" name="assist" class="assist" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
         </div>
         <div class="diceType" id="exhaustionDice">
           <label for="exhaustion">Sfinimento</label>
-          <input id="exhaustion" name="exhaustion" class="exhaustion" type="number" min="0" max="6" step="1" value="0" />
+          <input type="button" value="-" /><input id="exhaustion" name="exhaustion" class="exhaustion" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
         </div>
         <div class="diceType" id="madnessDice">
           <label for="madness">Pazzia</label>
-          <input id="madness" name="madness" class="madness" type="number" min="0" max="6" step="1" value="0" />
+          <input type="button" value="-" /><input id="madness" name="madness" class="madness" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
         </div>
         <div class="diceType" id="painDice">
           <label for="pain">Dolore</label>
-          <input id="pain" name="pain" class="pain" type="number" min="1" max="6" step="1" value="1" />
+          <input type="button" value="-" /><input id="pain" name="pain" class="pain" type="number" min="1" max="6" step="1" value="1" /><input type="button" value="+" />
         </div>
         <div class="diceType radio">
           <span>Talento di Sfinimento</span><br/>
@@ -58,9 +62,26 @@
         </div>
       </form>
     </div>
+    <div id="diceDisplay" class="displayBlock"></div>
+    <div id="displayResult"></div>
     <div id="footer">
       <a href="https://grumpybearstuff.com/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.
     </div>
   </body>
-  <script type="text/javascript" src="./ncas.js?TAGID=0.0.11"></script>
+  <script type="text/javascript">
+    const form = document.forms[0];
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      /*
+      for (const formElement of formData) {
+          //console.log(formElement);
+      }
+      */
+      getResults(formData);
+    });
+    form.addEventListener("click", function(event) {
+      click(event);
+    });
+  </script>
 </html>

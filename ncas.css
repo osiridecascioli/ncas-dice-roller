@@ -1,23 +1,38 @@
-input{
-    margin: 0.2em;
-    font-size: 110%;
-    padding: 0.1em;
-    border-radius: 0.5em;
-    width: 3em;
+body{
+    background-color: midnightblue;
+    color: whitesmoke;
+}
+#footer{
+    position: fixed;
+    min-height: 2rem;
+    padding: 0.5rem 0 0.5rem 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: whitesmoke;
+    color: black;
     text-align: center;
+    vertical-align: center;
+}
+input, .diceDisplayStyle{
+    font-size: 110%;
+    text-align: center;
+}
+input{
+    border-radius: 0.5em;
+}
+input[type=text]{
+    width: 8em;
+}
+input[type=number]{
+    width: 2em;
 }
 input[type=radio]{
     margin-left: 0.1em;
-   
     height: 1em;
-    
 }
-body{
-    background-color: black;
-    color: whitesmoke;
-}
-.diceType{
-    padding:  0.2em;
+.diceType, .diceDisplayStyle{
+    min-height: 25px;
 }
 .diceType label{
     width: 5em;
@@ -29,42 +44,44 @@ body{
 span.diceType{
     text-align: left;
 }
-#footer{
-   margin-top: 3em; 
+.discipline, .assist, .exhaustion, .madness, .pain{
+    padding: 0.2em;
+    display: inline;
 }
-div.diceResult{
-    display: inline-block;
+#diceDisplay .diceDisplayStyle{
+    display: block;
 }
-
-.discipline{
+.discipline, .assist{
     background-color: white;
-    padding: 0.1em;
     color:black;
 }
-
 .exhaustion{
     background-color: black;
     color:white;
 }
-
 .madness{
     background-color: red;
     color:white;
 }
-
 .pain{
     background-color:rebeccapurple;
     color:white;
 }
-
+.name{
+    margin-bottom: 1em;
+}
+.displayResultStyle {
+    border-bottom:whitesmoke 1px solid;
+}
+.displayResultStyle div{
+    margin-top: 0.5em;
+}
 .dominanceHi{
-    margin: 0.3em;
-    padding: 0.3em;
+    margin: 0.2em;
     border-width: 1px;
     border-color: grey;
     border-style: outset;
 }
-
 .winning{
     font-weight: bold;
     font-size: 1.2em;
@@ -74,4 +91,16 @@ div.diceResult{
 }
 .loser{
     color: brown;
+}
+
+.displayBlock{
+    display: inline-block;
+    vertical-align: top;
+}
+input[type=button] {
+    border-radius: 0;
+    padding: 0.1em;
+    margin: auto 0.3em;
+    min-width: 25px;
+    background-color:gold;
 }

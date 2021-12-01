@@ -1,16 +1,3 @@
-const form = document.forms[0];
-
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    /*
-    for (const formElement of formData) {
-        //console.log(formElement);
-    }
-    */
-    getResults(formData);
-});
-
 const dominance = {
     attribute: "",
     value: 0
@@ -38,8 +25,10 @@ const o = {
     alert:"",
     dominance: dominance,
     resultTxt: "",
-    playerStat: ["discipline", "madness", "exhaustion", "assist"],
-    masterStat: "pain"
+    playerStat: ["discipline", "assist", "exhaustion", "madness"],
+    masterStat: "pain",
+    name: "",
+    time:0
 };
 
 function resetData(){
@@ -62,6 +51,8 @@ function resetData(){
     o.dominance.attribute="";
     o.dominance.value=0;
     o.resultTxt = "";
+    o.name = "";
+    o.time=0;
 }
 
 function getResults(formData){
@@ -70,6 +61,7 @@ function getResults(formData){
     dieRoll(formData);
 
     /*
+    if needed to force result you can use this structure
     o.discipline=[6];
     o.disciplineStrenght=1;
     o.madness=[5,4];
@@ -81,17 +73,23 @@ function getResults(formData){
     */
 
     getExhaustion(formData);
+
+    getName(formData);
     
     getWinner();
 
-    getDominance();
+    calculateDominance();
 
-    getTextRes();
+    calculateDominanceTxt();
 
     display();
 }
 
 function display(){
+
+    setNewDisplay();
+
+    displayName();
     
     displayDice();
 
@@ -102,11 +100,34 @@ function display(){
     displayTalent();
 }
 
+//setNewDisplay
+function setNewDisplay(){
+    const dT = new Date();
+    let time = dT.getTime();
+    let d = getNcasE(time, "displayResult", true, true);
+    o.time=time;
+}
+
+//displayName
+function displayName(){
+    let d = getNcasE("name", "diceDisplay", true);
+    d.innerHTML = o.name;
+    displayCopyName();
+}
+
+//displayCopyName
+function displayCopyName(){
+    let d = getNcasE("name", o.time+"_result");
+    d.innerHTML = o.name; 
+}
+
+//displayWinner display if the player or the master win
 function displayWinner(){
-    let d = getNcasE("winner", "ncasDiceRoller");
+    let d = getNcasE("winning", o.time+"_result");
     d.innerHTML = o.winnerTxt;
 }
 
+//displayDice display all the dice results
 function displayDice(){
     for (const [key, value] of Object.entries(o.playerStat)) {
         //console.log(key, value);
@@ -115,40 +136,61 @@ function displayDice(){
     displayDie(o.masterStat);
 }
 
+//displayTalent display use of exhaustion talent
 function displayTalent(){
-    let d = getNcasE("talent", "ncasDiceRoller");
+    let d = getNcasE("talent", o.time+"_result");
     d.innerHTML = o.etalentTxt;
 }
 
+//displayDominance dominance
 function displayDominance(){
-    let d = getNcasE("dominance", "ncasDiceRoller");
+    let d = getNcasE("dominance", o.time+"_result");
     d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
     d.innerHTML += o.resultTxt;
 }
 
+//displayDie display single pool dice (ex. discipline or pain); parameter is the name of the pool
 function displayDie(name){
-    let d = getNcasE(name ,"dice");
+    let d = getNcasE(name ,"diceDisplay", true);
     d.innerHTML = o[name];
+    displayCopyDie(name);
 }
 
-function getNcasE(name, parent){
+//displayCopyDie
+function displayCopyDie(name){
+    if (o[name].length == 0){
+        return;
+    }
+    let d = getNcasE(name, o.time+"_result");
+    d.innerHTML = name+": "+o[name]+"; ";
+}
+
+//getNcasE get html element, if the element is already here will return it, else it will be created as child of parent
+//parameter name=ID of the html element, parent=ID of the parent where to append
+function getNcasE(name, parent, checkOld, invert){
     let d = document.getElementById(name+"_result");
-    if (d){
+    if (checkOld && d){
         return d;
     }
     let dP = document.getElementById(parent);
-    if (document.getElementById(name) && document.getElementById(name).parentNode){
-        dP = document.getElementById(name).parentNode;
-    }
     d = document.createElement('div');
     d.id = name+"_result";
-    d.className = parent+"Result";
+    d.className = parent+"Style "+name;
+    if (checkOld && invert){
+        dP.insertBefore(d, dP.childNodes[0]);
+        return d;
+    }
     dP.appendChild(d);
-    //dP.insertBefore(d, dP.childNodes[0]);
     return d;
 }
 
-function getTextRes(){
+//getName
+function getName(formData){
+    o.name = formData.get("name");
+}
+
+//calculateDominanceTxt from a calculated Dominance, set the rule info text regarding the pool dominance and effects
+function calculateDominanceTxt(){
     o.resultTxt += "<p>Indipendentemente dal "+o.winner+", la situazione ";
     switch (o.dominance.attribute){
         case "discipline":
@@ -175,7 +217,8 @@ function getTextRes(){
     o.resultTxt += "</p>";
 }
 
-function getDominance(){
+//calculateDominance calculate pool dominance
+function calculateDominance(){
     o.dominance.attribute = "pain";
     o.dominance.value = o.pain[0]
 
@@ -184,9 +227,9 @@ function getDominance(){
     compareDominance("madness");
 
     compareDominance("discipline");
-    //console.log(o.dominance);
 }
 
+//compareDominance there MUST be a 'default' setted, comparing this default with a new one
 function compareDominance(compare){
     //console.log(compare);
     if(o[compare].length < 1){
@@ -386,4 +429,23 @@ function Rd6(){
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+function click(e){
+    if (!e || !e.target || !e.target.type || e.target.type != "button"){
+        return;
+    }
+    let p = e.target.parentNode.id;
+    let id =  p.substring(0, (p.length-4));
+    let oldV = parseFloat(document.getElementById(id).value);
+    let newV = 0;
+    if (e.target.value == "+" && oldV < 6){
+        newV = oldV + 1;
+    } else if (e.target.value == "-" && oldV > 0) {
+        newV = oldV - 1;
+    } else{
+        return;
+    }
+    document.getElementById(id).value = newV;
+    console.log(id);
 }
