@@ -412,6 +412,7 @@ function getResult(name, token){
     return results;
 }
 
+//setSuccess
 function setSuccess(name, n){
     if ( n > 3)
         return;
@@ -423,14 +424,17 @@ function setSuccess(name, n){
     }
 }
 
+//Rd6 return random integer between 1 and 6
 function Rd6(){
     return getRndInteger(1, 7);
 }
 
+//getRndInteger return random integer
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
 
+//click suppress click function for plus and minus
 function click(e){
     if (!e || !e.target || !e.target.type || e.target.type != "button"){
         return;
