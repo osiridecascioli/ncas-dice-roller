@@ -118,20 +118,20 @@ function resetData(){
 
 //getResults from form to data 
 function getResults(formData){
-    const rawData = getDataAndRoll(formData);
-    /*
+    //const rawData = getDataAndRoll(formData);
+    
     //you can mock data as example below
     const rawData = {
         "discipline": 1,
         "discipline_rolls": [3],
-        "exhaustion": 0,
-        "exhaustion_rolls": [],
+        //"exhaustion": 1,
+        "exhaustion_rolls": [1],
         "pain": 1,
         "pain_rolls": [3],
-        "etalent":1,
+        "etalent":2,
         //"name": "pluto",
     }
-    */
+    
     elaborateData(rawData);
 }
 
@@ -260,7 +260,6 @@ function getDominance(c){
     while (max < 6){ //6 è un numero arbitrario
         if (!aP.rolls.length && !cP.rolls.length){
             if (debug) console.log("le due serie di dadi sono vuote", a, c, aP, cP);
-            //console.log(o.pool.pain.rolls, o.pool.discipline.rolls, aP.rolls );
             return [c, getStrength(o.pool[c].rolls)];
         }
         if (aP.rolls.length && !cP.rolls.length){
@@ -290,7 +289,7 @@ function getDominance(c){
         }
         aP = nextDraw(aP);
         cP = nextDraw(cP);
-        console.log("altro giro altra corsa!!", max);
+        if (debug) console.log("altro giro altra corsa!!", max);
         max++;
     };
     return ["cazzi", -1]
@@ -356,8 +355,9 @@ function setExhaustionTalent(rawData){
     if (!etalent || etalent == 0){
         return;
     }
+    etalent = Number(etalent);
     let ext = rawData["exhaustion"];
-    if (ext == 0 ){
+    if (!ext || ext == 0 ){
         o.etalentTxt = "<br />Non puoi usare il Talento di Sfinimento senza avere Sfinimento.";
         return;
     }
@@ -368,7 +368,7 @@ function setExhaustionTalent(rawData){
         o.etalentTxt = "Talento, uso Minore. Minimo "+ext+" successi.";
         return;
     }
-    o.success.player = o.success.player + etalent;
+    o.success.player = o.success.player + ext;
     o.etalentTxt = "Talento, uso Maggiore. +"+ext+" successi.";
 }
 
