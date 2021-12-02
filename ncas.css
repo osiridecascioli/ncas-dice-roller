@@ -49,12 +49,16 @@ fieldset{
     width: auto;
 }
 input[type=text]{
-    width: 6rem;
-    font-size: 110%;
+    width: 7rem;
+    font-size: 120%;
 }
 input[type=number]{
     width: 2rem;
     text-align: right;
+    font-size: 110%;
+    margin: 0 0.9rem;
+}
+input[type=button] {
     font-size: 110%;
 }
 input[type=submit] {
