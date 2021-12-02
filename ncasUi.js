@@ -2,93 +2,98 @@
 function display(){
     setNewDisplay();
     displayName();
-    displayDice();
+    displayDie();
     displayWinner();
-    displayDominance();
     displayTalent();
+    displayDominance();
 }
 
 //setNewDisplay
 function setNewDisplay(){
     const dT = new Date();
     let time = dT.getTime();
-    let d = getNcasE(time, "displayResult", true, true);
     o.time=time;
+    let d = getNcasE(o.time, "displayResult", true, true);
 }
 
 //displayName
 function displayName(){
-    let d = getNcasE("name", "diceDisplay", true);
-    d.innerHTML = o.name;
+    let d = getNcasE("name", o.time+"Display");
+    d.innerHTML = o.name; 
     displayCopyName();
 }
 
 //displayCopyName
 function displayCopyName(){
-    let d = getNcasE("name", o.time+"_result");
-    d.innerHTML = o.name; 
-}
-
-//displayWinner display if the player or the master win
-function displayWinner(){
-    let d = getNcasE("winning", o.time+"_result");
-    d.innerHTML = o.success.winnerTxt;
+    let d = getNcasE("nameCopy", "diceDisplay", true);
 }
 
 //displayDice display all the dice results
-function displayDice(){
+function displayDie(){
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
-        displayDie(pool[i]);
+        displayDice(pool[i]);
     }
-}
-
-//displayTalent display use of exhaustion talent
-function displayTalent(){
-    let d = getNcasE("talent", o.time+"_result");
-    d.innerHTML = o.etalentTxt;
-}
-
-//displayDominance dominance
-function displayDominance(){
-    let d = getNcasE("dominance", o.time+"_result");
-    if(o.dominance.str < 1){
-        d.innerHTML = "<p>" + o.dominance.attribute + "</p>";
-        return;        
-    }
-    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o.pool[o.dominance.attribute].txtArticle+o.pool[o.dominance.attribute].txt + " domina;</p>";
-    d.innerHTML += o.dominance.txt;
 }
 
 //displayDie display single pool dice (ex. discipline or pain); parameter is the name of the pool
-function displayDie(name){
-    let d = getNcasE(name ,"diceDisplay", true);
-    if (!o.pool[name].rolls || o.pool[name].rolls.length == 0){
-        return;
+function displayDice(name){
+    let n = "";
+    if (o.pool[name].rolls && o.pool[name].rolls.length){
+        n = name+": "+o.pool[name].rolls;
     }
-    d.innerHTML = o.pool[name].rolls;
+    let d = getNcasE(name, o.time+"Display");
+    d.innerHTML = n;
+    
     displayCopyDie(name);
 }
 
 //displayCopyDie
 function displayCopyDie(name){
-    if (!o.pool[name].rolls || o.pool[name].rolls.length == 0){
-        return;
+    let n = "&nbsp;";
+    if (o.pool[name].rolls && o.pool[name].rolls.length){
+        n = o.pool[name].rolls;
     }
-    let d = getNcasE(name, o.time+"_result");
-    d.innerHTML = name+": "+o.pool[name].rolls;
+    let d = getNcasE(name+"Copy" ,"diceDisplay", true);
+    d.innerHTML = n;
+}
+//displayWinner display if the player or the master win
+function displayWinner(){
+    let d = getNcasE("winning", o.time+"Display");
+    d.innerHTML = o.success.winnerTxt;
+}
+
+//displayTalent display use of exhaustion talent
+function displayTalent(){
+    let d = getNcasE("talent", o.time+"Display");
+    d.innerHTML = o.etalentTxt;
+}
+
+//displayDominance dominance
+function displayDominance(){
+    let d = getNcasE("dominance", o.time+"Display");
+    if(o.dominance.str < 1){
+        d.innerHTML = "<p>" + o.dominance.attribute + "</p>";
+        return;        
+    }
+    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"Class\">" + o.pool[o.dominance.attribute].txtArticle+o.pool[o.dominance.attribute].txt + " domina;</p>";
+    d.innerHTML += o.dominance.txt;
 }
 
 //getNcasE get html element, if the element is already here will return it, else it will be created as child of parent
 //parameter name=ID of the html element, parent=ID of the parent where to append
 function getNcasE(name, parent, checkOld, invert){
-    let d = document.getElementById(name+"_result");
+    let d = document.getElementById(name+"Display");
     if (checkOld && d){
         return d;
     }
     let dP = document.getElementById(parent);
     d = document.createElement('div');
-    d.id = name+"_result";
-    d.className = parent+"Style "+name;
+    d.id = name+"Display";
+    if (checkOld){
+        name = String(name);
+        name = name.substring(0, (name.length-4));
+    }
+    d.className = name+"Class";
     if (checkOld && invert){
         dP.insertBefore(d, dP.childNodes[0]);
         return d;
@@ -102,8 +107,8 @@ function click(e){
     if (!e || !e.target || !e.target.type || e.target.type != "button"){
         return;
     }
-    let p = e.target.parentNode.id;
-    let id =  p.substring(0, (p.length-4));
+
+    let id =  getAllSiblings(e.target, inputFilter)[0].id;
     let oldV = parseFloat(document.getElementById(id).value);
     let newV = oldV;
     if (e.target.value == "+"){
@@ -114,4 +119,22 @@ function click(e){
         return;
     }
     document.getElementById(id).value = newV;
+}
+
+function inputFilter(elem){
+
+    if (elem.nodeName.toUpperCase() == "INPUT" && elem.type.toUpperCase() == "NUMBER" ){
+        return true
+    }
+    return false;
+}
+
+function getAllSiblings(elem, filter) {
+    var sibs = [];
+    elem = elem.parentNode.firstChild;
+    do {
+        if (elem.nodeType === 3) continue; // text node
+        if (!filter || filter(elem)) sibs.push(elem);
+    } while (elem = elem.nextSibling)
+    return sibs;
 }

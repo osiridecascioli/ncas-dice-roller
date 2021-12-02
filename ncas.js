@@ -132,7 +132,6 @@ function getResults(formData){
         //"name": "pluto",
     }
     */
-
     elaborateData(rawData);
 }
 
@@ -381,7 +380,7 @@ function setDieRoll(rawData){
     }
 }
 
-//setDieResults set the result of dice rolled
+//setDieResults set the result of die rolled
 //parameters: formData=the data submitted, name=the name of the pool to be rolled
 function setDieResults(rawData, name){
     o.pool[name].rolls = rawData[name+"_rolls"];
@@ -404,7 +403,7 @@ function getDieResult(name, n){
 }
 
 //setSuccess calculate the number of success for player or for master
-//parameters are name=name of the pool (ex. madness, pain) n=the number aka the number the dice rolled
+//parameters are name=name of the pool (ex. madness, pain) n=the number aka the number the die rolled
 function setSuccess(name, n){
     if ( n > 3)
         return;

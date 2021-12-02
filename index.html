@@ -23,47 +23,43 @@
 
   <body>
     <h1>Salve risvegliato,</h1>
-    <div id="formBlock" class="displayBlock">
-      <form id="ncasDiceRoller" name="ncasDiceRoller">
-        <div class="diceType" id="nameZone">
-          <label for="name">Nome</label>
-          <input id="name" name="name" class="name" type="text" value="Ozzy" />
-        </div>
-        <div class="diceType" id="disciplineDice">
-          <label for="discipline">Disciplina</label>
-          <input type="button" value="-" /><input id="discipline" name="discipline" class="discipline" type="number" min="1" max="6" step="1" value="1" /><input type="button" value="+" />
-        </div>
-        <div class="diceType" id="madnessDice">
-          <label for="madness">Pazzia</label>
-          <input type="button" value="-" /><input id="madness" name="madness" class="madness" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
-        </div>
-        <div class="diceType" id="exhaustionDice">
-          <label for="exhaustion">Sfinimento</label>
-          <input type="button" value="-" /><input id="exhaustion" name="exhaustion" class="exhaustion" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
-        </div>
-        <div class="diceType" id="assistDice">
-          <label for="assist">Aiuto</label>
-          <input type="button" value="-" /><input id="assist" name="assist" class="assist" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
-        </div>
-        <div class="diceType" id="painDice">
-          <label for="pain">Dolore</label>
-          <input type="button" value="-" /><input id="pain" name="pain" class="pain" type="number" min="1" max="10" step="1" value="1" /><input type="button" value="+" />
-        </div>
-        <div class="diceType radio">
-          <span>Talento di Sfinimento</span><br/>
-          <label for="talento_nessuno">no</label>
-          <input id="talento_nessuno" name="etalent" type="radio" value="0" checked="true" />
-          <label for="talento_sfinimento">minore</label>
-          <input id="talento_sfinimento" name="etalent" type="radio" value="1" />
-          <label for="talento_follia">maggiore</label>
-          <input id="talento_follia" name="etalent" type="radio" value="2" />
-        </div>
-        <div class="diceType">
-          <input id="roll" name="roll" type="submit" value="tira" />
-        </div>
-      </form>
-    </div>
-    <div id="diceDisplay" class="displayBlock"></div>
+    <form id="ncasdiceroller">
+      <fieldset>
+        <label for="name">Nome</label>
+        <input id="name" name="name" type="text" value="Ozzy" />
+      </fieldset>
+      <fieldset>
+        <label for="discipline">Disciplina</label>
+        <input type="button" value="-" /><input id="discipline" name="discipline" class="disciplineClass" type="number" min="1" max="6" step="1" value="1" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="madness">Pazzia</label>
+        <input type="button" value="-" /><input id="madness" name="madness" class="madnessClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="exhaustion">Sfinimento</label>
+        <input type="button" value="-" /><input id="exhaustion" name="exhaustion" class="exhaustionClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="assist">Aiuto</label>
+        <input type="button" value="-" /><input id="assist" name="assist" class="assistClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="pain">Dolore</label>
+        <input type="button" value="-" /><input id="pain" name="pain" class="painClass" type="number" min="1" max="10" step="1" value="1" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset class="radio">
+        <span>Talento di Sfinimento</span><br/>
+        <label for="talento_nessuno">no</label>
+        <input id="talento_nessuno" name="etalent" type="radio" value="0" checked="true" />
+        <label for="talento_sfinimento">minore</label>
+        <input id="talento_sfinimento" name="etalent" type="radio" value="1" />
+        <label for="talento_follia">maggiore</label>
+        <input id="talento_follia" name="etalent" type="radio" value="2" />
+      </fieldset>
+      <input id="roll" name="roll" type="submit" value="tira" />
+    </form>
+    <div id="diceDisplay"></div>
     <div id="displayResult"></div>
     <div id="footer">
       <a href="https://grumpybearstuff.com/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.

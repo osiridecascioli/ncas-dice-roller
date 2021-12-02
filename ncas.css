@@ -2,6 +2,9 @@ body{
     background-color: midnightblue;
     color: whitesmoke;
 }
+#displayResult{
+    margin-bottom: 4rem;
+}
 #footer{
     position: fixed;
     min-height: 2rem;
@@ -14,80 +17,65 @@ body{
     text-align: center;
     vertical-align: center;
 }
-.diceDisplayStyle{
-    margin: 0.1em;
-}
-input, .diceDisplayStyle{
-    font-size: 110%;
-    text-align: center;
-}
-input{
-    border-radius: 0.5em;
-}
-input[type=text]{
-    width: 8em;
-}
-input[type=number]{
-    width: 2em;
-}
-input[type=radio]{
-    margin-left: 0.1em;
-    height: 1em;
-}
-.diceType, .diceDisplayStyle{
-    min-height: 23px;
-}
-.diceType label{
-    width: 5em;
-    display: inline-block;
-}
-.diceType.radio label{
-    width: auto;
-}
-span.diceType{
-    text-align: left;
-}
-.discipline, .assist, .exhaustion, .madness, .pain{
-    padding: 0.2em;
-    display: inline;
-}
-#diceDisplay .diceDisplayStyle{
-    display: block;
-}
-.discipline, .assist{
+
+.disciplineClass{
     background-color: white;
     color:black;
 }
-.exhaustion{
+.assistClass{
+    background-color:lightgrey;
+    color:black;
+}
+.exhaustionClass{
     background-color: black;
     color:white;
 }
-.madness{
+.madnessClass{
     background-color: red;
     color:white;
 }
-.pain{
+.painClass{
     background-color:rebeccapurple;
     color:white;
 }
-.displayResultStyle .name{
-    margin-bottom: 1em;
+fieldset{
+    border: 0;
 }
-.displayResultStyle {
+#ncasdiceroller label{
+    width: 5rem;
+    display: inline-block;
+}
+#ncasdiceroller .radio label{
+    width: auto;
+}
+input[type=text]{
+    width: 6rem;
+    font-size: 110%;
+}
+input[type=number]{
+    width: 2rem;
+    text-align: right;
+    font-size: 110%;
+}
+input[type=submit] {
+    background-color:gold;
+    padding: 0.3rem 0.8rem;
+    margin: 0.5rem;
+    font-size: 120%;
+}
+#displayResult > div{
     border-bottom:whitesmoke 1px solid;
 }
-.displayResultStyle div{
-    margin-top: 0.5em;
+
+#displayResult > * > div{
+    margin-bottom: 1rem;
 }
-.dominanceHi{
-    margin: 0.2em;
-    border-width: 1px;
-    border-color: grey;
-    border-style: outset;
+#winningDisplay{
+    margin-top: 1rem;
 }
 .winning{
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 130%;
 }
 .winner{
     color:greenyellow;
@@ -95,15 +83,30 @@ span.diceType{
 .loser{
     color: brown;
 }
-
-.displayBlock{
+.dominanceHi{
+    border-width: 1px;
+    border-color: grey;
+    border-style: outset;
+    margin: 1rem auto;
+}
+#displayResult .disciplineClass
+, #displayResult .assistClass
+, #displayResult .madnessClass
+, #displayResult .painClass
+, #displayResult .exhaustionClass{
+    display: inline;
+    padding: 0.2rem;
+    
+}
+form, #diceDisplay{
     display: inline-block;
     vertical-align: top;
 }
-input[type=button] {
-    border-radius: 0;
-    padding: 0.1em;
-    margin: auto 0.3em;
-    min-width: 25px;
-    background-color:gold;
+fieldset, #diceDisplay > div{
+    min-height: 23px;
+}
+#diceDisplay > div{
+    padding: 0.4em 0.8em;
+    margin-top: 0.3em;
+    border-radius: 0.4em;
 }
