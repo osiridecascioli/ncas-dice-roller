@@ -51,6 +51,10 @@ function displayTalent(){
 //displayDominance dominance
 function displayDominance(){
     let d = getNcasE("dominance", o.time+"_result");
+    if(o.dominance.str < 1){
+        d.innerHTML = "<p>" + o.dominance.attribute + "</p>";
+        return;        
+    }
     d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o.pool[o.dominance.attribute].txtArticle+o.pool[o.dominance.attribute].txt + " domina;</p>";
     d.innerHTML += o.dominance.txt;
 }

@@ -50,7 +50,7 @@ const o = {
     etalentTxt:"",
     dominance: {
         attribute: "",
-        value: 0,
+        str: 0,
         txt: "",
     },
     name: "",
@@ -123,13 +123,13 @@ function getResults(formData){
 
     dieRoll(rawData);
     /*
-    o.pool.discipline.rolls = [6,6,1];
-    o.pool.discipline.str = 2;
-    o.pool.madness.rolls = [6,2];
+    o.pool.discipline.rolls = [6,5,5,3];
+    o.pool.discipline.str = 1;
+    o.pool.madness.rolls = [4,2];
     o.pool.madness.str = 1;
-    o.pool.exhaustion.rolls = [6,1];
+    o.pool.exhaustion.rolls = [5,1];
     o.pool.exhaustion.str = 1;
-    o.pool.pain.rolls = [5,4,4,3,2,1];
+    o.pool.pain.rolls = [6,5,5,4,2,1];
     o.pool.pain.str = 1;
     */
 
@@ -200,119 +200,85 @@ function setDominance(){
         if( !o.pool[pool[i]].dominance ){
             continue;
         }
-        compareAndSetDominance(pool[i]);
-        //console.log("vince ", o.dominance.attribute)
+        [o.dominance.attribute, o.dominance.str] = getDominance(pool[i]);
     }
     setDominanceTxt();
 }
 
-//compareAndSetDominance comparing this default with a new one, if empty, use as default
-function compareAndSetDominance(compare){
-    if(o.dominance.value == 0){
-        //console.log("set default");
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return;
+//getDominance return dominance pool and strenght
+function getDominance(c){
+    if( !o.dominance.str || o.dominance.str == 0){
+        return [c, getStrength(o.pool[c].rolls)];
     }
-    //console.log("comparo ", o.dominance.attribute, compare)
-    if(o.pool[compare].rolls.length < 1){
-        //console.log("il comparato", compare, "è troppo corto");
-        return;
-    }
-
-    if (o.dominance.value > o.pool[compare].rolls[0]){
-        //console.log("il primo valore VECCHIO è più alto", o.dominance.value,o.pool[compare].rolls[0]);
-        return;
-    }
-
-    if (o.dominance.value < o.pool[compare].rolls[0]){
-        //console.log("il primo valore NUOVO è più alto", o.dominance.attribute, o.dominance.value, compare, o.pool[compare].rolls[0]);
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return;
-    }
-
-    let actualD = o.dominance.attribute;
-    //equal case
-    if (o.pool[actualD].str > o.pool[compare].str ){
-        //console.log("il numero di dadi più alto è maggiore");
-        return;
-    } else if (o.pool[actualD].str < o.pool[compare].str ){
-        //console.log("il numero di dadi più alto è minore");
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return;
-    } 
-    
-    //console.log("this gonna be difficult");
     let max = 0;
-    let newObj = {};
-    newObj[actualD] = removeUpper(o.pool[actualD].rolls);
-    newObj[compare] = removeUpper(o.pool[compare].rolls);
+    let [a, s] = [o.dominance.attribute, o.dominance.str];
+    let aP = {rolls:[], str:0};
+    let cP = {rolls:[], str:0};
+    [aP.rolls, aP.str] = copyPool(o.pool[a]);
+    [cP.rolls, cP.str] = copyPool(o.pool[c]);
+    //console.log(a, c);
     while (max < 6){ //6 è un numero arbitrario
-        if (setDominanceDraw(newObj, actualD, compare)){
-            return;
+        if (!aP.rolls.length && !cP.rolls.length){
+            //console.log("le due serie di dadi sono vuote", a, c, aP, cP);
+            return [a, s];
         }
-        newObj[actualD] = removeUpper(newObj[actualD]);
-        newObj[compare] = removeUpper(newObj[compare]);
+        if (aP.rolls.length && !cP.rolls.length){
+            //console.log("la nuova serie di dadi è vuota ",  a, c, aP, cP);
+            return [a, s];
+        }
+        if (!aP.rolls.length && cP.rolls.length){
+            //console.log("la vecchia serie di dadi è vuota ",  a, c, aP, cP);
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+        if (aP.rolls[0] > cP.rolls[0]){
+            //console.log("il primo valore VECCHIO è più alto",  a, c, aP, cP);
+            return [a, s];
+        }
+        if (aP.rolls[0] < cP.rolls[0]){
+            //console.log("il primo valore NUOVO è più alto",  a, c, aP, cP);
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+
+        if (aP.str > cP.str){
+            //console.log("la forza VECCHIA è più alta",  a, c, aP, cP);
+            return [a, s];
+        }
+        if (aP.str < cP.str){
+            //console.log("la forza NUOVA è più alta",  a, c, aP, cP);
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+        aP = nextDraw(aP);
+        cP = nextDraw(cP);
+        //console.log("altro giro altra corsa!!", max);
         max++;
     };
-    //console.log("Dominio da controllare a mano");
-    o.dominance.attribute +="<br />Dominio da controllare a mano.";
-    o.dominance.value = 0;
+    return ["cazzi", -1]
 }
 
-//setDominanceDraw in case of dominance draw we have to do a bit of calculation
-function setDominanceDraw(newObj, actualD, compare){
-    if (!newObj[actualD].length && !newObj[compare].length){
-        //console.log("le due serie di dadi sono vuote", actualD, compare);
-        return true;
-    }else if (newObj[actualD].length &&  !newObj[compare].length){
-        //console.log("la nuova serie di dadi è vuota ", actualD, compare);
-        return true;
-    }else if (!newObj[actualD].length && newObj[compare].length){
-        //console.log("la vecchia serie di dadi è vuota", actualD, compare);
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return true;
-    }
-    if (newObj[actualD][0] > newObj[compare][0]){
-        //console.log("il dado successivo vecchio è più alto", actualD, compare)
-        return true;
-    }else if (newObj[actualD][0] < newObj[compare][0]){
-        //console.log("il dado successivo nuovo è più alto", actualD, compare);
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return true;
-    }
-    if (getStrength(newObj[actualD]) > getStrength(newObj[compare])){
-        //console.log("il numero di dadi più alti vecchio è più alto", actualD, compare);
-        return true;
-    } else if (getStrength(newObj[actualD]) < getStrength(newObj[compare])){
-        //console.log("il numero di dadi più alti nuovi è più alto", actualD, compare);
-        o.dominance.attribute = compare;
-        o.dominance.value = o.pool[compare].rolls[0];
-        return true;
-    }
-    //console.log("oddio", actualD, compare);
-    return false;
-}
-
-//removeUpper remove all the hightest number from a list. ex [5,5,4] will be [4]
-function removeUpper(arr){
-    if (!arr || !arr.length){
-        return [];
-    }
-    let v = arr[0];
-    arr = arr.sort();
-    let aN = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] >= v ){
-            arr.sort().reverse();
-            return aN.reverse();
+//nextDraw remove highest value/s from pool and recalculate strenght 
+function nextDraw(p){
+    let v = p.rolls[0];
+    let nD = {rolls:[], str:0};
+    for (let i = 0; i < p.rolls.length; i++) {
+        if (p.rolls[i] >= v ){
+            continue;
         }
-        aN.push(arr[i]);
+        nD.rolls.push(p.rolls[i]);
     }
+    nD.str = getStrength(nD.rolls);
+    return nD;
+}
+
+//copyPool copy the pool
+function copyPool(p){
+    if (!p.rolls.length){
+        return [[], 0];
+    }
+    let a = [];
+    for (let i = 0; i < p.rolls.length; i++) {
+        a.push(p.rolls[i]);
+    }
+    return [a, p.str];
 }
 
 //getStrength return the number of time the maximum number appear in an reverse sorted list ex [6,6,4,1] will return 2 
