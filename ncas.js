@@ -116,22 +116,36 @@ function resetData(){
     o.time=0;
 }
 
+//getResults from form to data 
 function getResults(formData){
+    const rawData = getDataAndRoll(formData);
+    /*
+    //you can mock data as example below
+    const rawData = {
+        "discipline": 1,
+        "discipline_rolls": [3],
+        "exhaustion": 0,
+        "exhaustion_rolls": [],
+        "pain": 1,
+        "pain_rolls": [3],
+        "etalent":1,
+        //"name": "pluto",
+    }
+    */
+
+    elaborateData(rawData);
+}
+
+//elaborateData from rawData make NCaS calculation
+function elaborateData(rawData){
+
     resetData();
 
-    const rawData = getData(formData);
+    setDieRoll(rawData);
 
-    dieRoll(rawData);
-    /*
-    o.pool.discipline.rolls = [6,5,5,3];
-    o.pool.discipline.str = 1;
-    o.pool.madness.rolls = [4,2];
-    o.pool.madness.str = 1;
-    o.pool.exhaustion.rolls = [5,1];
-    o.pool.exhaustion.str = 1;
-    o.pool.pain.rolls = [6,5,5,4,2,1];
-    o.pool.pain.str = 1;
-    */
+    setStrength(rawData)
+
+    setSuccesses();
 
     setExhaustionTalent(rawData);
 
@@ -144,19 +158,44 @@ function getResults(formData){
     display();
 }
 
-//getData return simple obj with the form data
-function getData(formData){
+//setSuccesses calculate player and master success
+function setSuccesses(){
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        if (!o.pool[pool[i]].rolls){
+            continue
+        }
+        for (let n = 0; n < o.pool[pool[i]].rolls.length; n++) {
+            setSuccess(pool[i], o.pool[pool[i]].rolls[n]);
+        }
+    }
+}
+
+//setStrength set ALL pool strength
+function setStrength(rawData){
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        o.pool[pool[i]].str = getStrength(o.pool[pool[i]].rolls);
+    }
+}
+
+//getDataAndRoll return simple obj with the form data and rolled die
+function getDataAndRoll(formData){
     const rawData = {};
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
-        rawData[pool[i]] = Number(formData.get(pool[i]));
+        let n = Number(formData.get(pool[i]))
+        rawData[pool[i]] = n;
+        rawData[pool[i]+"_rolls"] = getDieResult(pool[i], n);
     }
     rawData.etalent = Number(formData.get("etalent"));
     rawData.name = formData.get("name");
     return rawData;
 }
 
-//setName
+//setName set player name
 function setName(rawData){
+    if (!('name' in rawData)){
+        o.name = new Date().getTime();
+        return;
+    }
     o.name = rawData["name"];
 }
 
@@ -199,7 +238,7 @@ function setDominance(){
     for (let i = 0, pool = Object.keys(o.pool).reverse(); i < pool.length; i++) {
         if( !o.pool[pool[i]].dominance ){
             continue;
-        }
+        }        
         [o.dominance.attribute, o.dominance.str] = getDominance(pool[i]);
     }
     setDominanceTxt();
@@ -217,39 +256,42 @@ function getDominance(c){
     [aP.rolls, aP.str] = copyPool(o.pool[a]);
     [cP.rolls, cP.str] = copyPool(o.pool[c]);
     //console.log(a, c);
+    let debug = false;
+    //debug = true;
     while (max < 6){ //6 è un numero arbitrario
         if (!aP.rolls.length && !cP.rolls.length){
-            //console.log("le due serie di dadi sono vuote", a, c, aP, cP);
-            return [a, s];
+            if (debug) console.log("le due serie di dadi sono vuote", a, c, aP, cP);
+            //console.log(o.pool.pain.rolls, o.pool.discipline.rolls, aP.rolls );
+            return [c, getStrength(o.pool[c].rolls)];
         }
         if (aP.rolls.length && !cP.rolls.length){
-            //console.log("la nuova serie di dadi è vuota ",  a, c, aP, cP);
+            if (debug) console.log("la nuova serie di dadi è vuota ",  a, c, aP, cP);
             return [a, s];
         }
         if (!aP.rolls.length && cP.rolls.length){
-            //console.log("la vecchia serie di dadi è vuota ",  a, c, aP, cP);
+            if (debug) console.log("la vecchia serie di dadi è vuota ",  a, c, aP, cP);
             return [c, getStrength(o.pool[c].rolls)];
         }
         if (aP.rolls[0] > cP.rolls[0]){
-            //console.log("il primo valore VECCHIO è più alto",  a, c, aP, cP);
+            if (debug) console.log("il primo valore VECCHIO è più alto",  a, c, aP, cP);
             return [a, s];
         }
         if (aP.rolls[0] < cP.rolls[0]){
-            //console.log("il primo valore NUOVO è più alto",  a, c, aP, cP);
+            if (debug) console.log("il primo valore NUOVO è più alto",  a, c, aP, cP);
             return [c, getStrength(o.pool[c].rolls)];
         }
 
         if (aP.str > cP.str){
-            //console.log("la forza VECCHIA è più alta",  a, c, aP, cP);
+            if (debug) console.log("la forza VECCHIA è più alta",  a, c, aP, cP);
             return [a, s];
         }
         if (aP.str < cP.str){
-            //console.log("la forza NUOVA è più alta",  a, c, aP, cP);
+            if (debug) console.log("la forza NUOVA è più alta",  a, c, aP, cP);
             return [c, getStrength(o.pool[c].rolls)];
         }
         aP = nextDraw(aP);
         cP = nextDraw(cP);
-        //console.log("altro giro altra corsa!!", max);
+        console.log("altro giro altra corsa!!", max);
         max++;
     };
     return ["cazzi", -1]
@@ -271,7 +313,7 @@ function nextDraw(p){
 
 //copyPool copy the pool
 function copyPool(p){
-    if (!p.rolls.length){
+    if (!p || !p.rolls || !p.rolls.length){
         return [[], 0];
     }
     let a = [];
@@ -283,7 +325,7 @@ function copyPool(p){
 
 //getStrength return the number of time the maximum number appear in an reverse sorted list ex [6,6,4,1] will return 2 
 function getStrength(n){
-    if(!n.length){
+    if(!n || !n.length){
         return 1;
     }
     let m = 0;
@@ -312,11 +354,11 @@ function setWinner(){
 //setExhaustionTalent check if exhaustion talent is selected and is mechanic
 function setExhaustionTalent(rawData){
     let etalent = rawData["etalent"];
-    if (etalent == 0){
+    if (!etalent || etalent == 0){
         return;
     }
     let ext = rawData["exhaustion"];
-    if (ext == 0){
+    if (ext == 0 ){
         o.etalentTxt = "<br />Non puoi usare il Talento di Sfinimento senza avere Sfinimento.";
         return;
     }
@@ -331,19 +373,19 @@ function setExhaustionTalent(rawData){
     o.etalentTxt = "Talento, uso Maggiore. +"+ext+" successi.";
 }
 
-//dieRoll roll the dice for all the pool (ex. exhaustion, pain, madness)
-//parameters: rawData=the data submitted
-function dieRoll(rawData){
+//setDieRoll set rolled die for all the pool (ex. exhaustion, pain, madness)
+//parameters: rawData=the data submitted and rolled
+function setDieRoll(rawData){
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
         setDieResults(rawData, pool[i]);
-        o.pool[pool[i]].str = getStrength(o.pool[pool[i]].rolls);
     }
 }
 
 //setDieResults set the result of dice rolled
 //parameters: formData=the data submitted, name=the name of the pool to be rolled
 function setDieResults(rawData, name){
-    o.pool[name].rolls = getDieResult(name, rawData[name]);
+    o.pool[name].rolls = rawData[name+"_rolls"];
+    //getDieResult(name, rawData[name]);
 }
 
 //getDieResult get the list of result for a pool, and also the strenght
@@ -355,14 +397,13 @@ function getDieResult(name, n){
     let results = [];
     for (let i = 0; i < n; i++) {
         let result = Rd6();
-        setSuccess(name, result);
         results.push(result);
     }
     results.sort().reverse();
     return results;
 }
 
-//setSuccess calculate the number of success for player and for master
+//setSuccess calculate the number of success for player or for master
 //parameters are name=name of the pool (ex. madness, pain) n=the number aka the number the dice rolled
 function setSuccess(name, n){
     if ( n > 3)

@@ -62,13 +62,16 @@ function displayDominance(){
 //displayDie display single pool dice (ex. discipline or pain); parameter is the name of the pool
 function displayDie(name){
     let d = getNcasE(name ,"diceDisplay", true);
+    if (!o.pool[name].rolls || o.pool[name].rolls.length == 0){
+        return;
+    }
     d.innerHTML = o.pool[name].rolls;
     displayCopyDie(name);
 }
 
 //displayCopyDie
 function displayCopyDie(name){
-    if (o.pool[name].rolls.length == 0){
+    if (!o.pool[name].rolls || o.pool[name].rolls.length == 0){
         return;
     }
     let d = getNcasE(name, o.time+"_result");
