@@ -118,8 +118,8 @@ function resetData(){
 
 //getResults from form to data 
 function getResults(formData){
-    //const rawData = getDataAndRoll(formData);
-    
+    const rawData = getDataAndRoll(formData);
+    /*
     //you can mock data as example below
     const rawData = {
         "discipline": 1,
@@ -131,6 +131,7 @@ function getResults(formData){
         "etalent":2,
         //"name": "pluto",
     }
+    */
     
     elaborateData(rawData);
 }
@@ -254,7 +255,6 @@ function getDominance(c){
     let cP = {rolls:[], str:0};
     [aP.rolls, aP.str] = copyPool(o.pool[a]);
     [cP.rolls, cP.str] = copyPool(o.pool[c]);
-    //console.log(a, c);
     let debug = false;
     //debug = true;
     while (max < 6){ //6 è un numero arbitrario
