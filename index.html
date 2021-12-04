@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <meta charset="utf-8" />
-    <title>[0.0.11] Non Cedere al Sonno dice roller"</title>
+    <title>[0.0.19] Non Cedere al Sonno dice roller</title>
     <!--<link rel="shortcut icon" type="image/ico" href="css/images/favicon.jpg">-->
 
     <meta
@@ -11,14 +11,21 @@
     />
     <link
       id="MainCSS"
-      href="ncas.css?TAGID=0.0.11"
+      href="ncas.css?TAGID=0.0.19"
       type="text/css"
       rel="Stylesheet"
     />
+  
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <script type="text/javascript" src="./ncasUi.js?TAGID=0.0.19"></script>
+    <script type="text/javascript" src="./ncas.js?TAGID=0.0.19"></script>
+    
+
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
   </head>
 
   <body>
+<<<<<<< HEAD
     <div id="main">
       <h1 id="title">Salve risvegliato,</h1>
     </div>
@@ -65,4 +72,65 @@
   </body>
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <script type="text/javascript" src="./ncas.js?TAGID=0.0.11"></script>
+=======
+    <h1>Salve risvegliato,</h1>
+    <form id="ncasdiceroller">
+      <fieldset>
+        <label for="name">Nome</label>
+        <input id="name" name="name" type="text" value="Ozzy" />
+      </fieldset>
+      <fieldset>
+        <label for="discipline">Disciplina</label>
+        <input type="button" value="-" /><input id="discipline" name="discipline" class="disciplineClass" type="number" min="1" max="6" step="1" value="1" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="madness">Pazzia</label>
+        <input type="button" value="-" /><input id="madness" name="madness" class="madnessClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="exhaustion">Sfinimento</label>
+        <input type="button" value="-" /><input id="exhaustion" name="exhaustion" class="exhaustionClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="assist">Aiuto</label>
+        <input type="button" value="-" /><input id="assist" name="assist" class="assistClass" type="number" min="0" max="6" step="1" value="0" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset>
+        <label for="pain">Dolore</label>
+        <input type="button" value="-" /><input id="pain" name="pain" class="painClass" type="number" min="1" max="10" step="1" value="1" /><input type="button" value="+" />
+      </fieldset>
+      <fieldset class="radio">
+        <span>Talento di Sfinimento</span><br/>
+        <label for="talento_nessuno">no</label>
+        <input id="talento_nessuno" name="etalent" type="radio" value="0" checked="true" />
+        <label for="talento_sfinimento">minore</label>
+        <input id="talento_sfinimento" name="etalent" type="radio" value="1" />
+        <label for="talento_follia">maggiore</label>
+        <input id="talento_follia" name="etalent" type="radio" value="2" />
+      </fieldset>
+      <input id="roll" name="roll" type="submit" value="tira" />
+    </form>
+    <div id="diceDisplay"></div>
+    <div id="displayResult"></div>
+    <div id="footer">
+      <a href="https://grumpybearstuff.com/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.
+    </div>
+  </body>
+  <script type="text/javascript">
+    const form = document.forms[0];
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      /*
+      for (const formElement of formData) {
+          //console.log(formElement);
+      }
+      */
+      getResults(formData);
+    });
+    form.addEventListener("click", function(event) {
+      click(event);
+    });
+  </script>
+>>>>>>> littleImprov
 </html>

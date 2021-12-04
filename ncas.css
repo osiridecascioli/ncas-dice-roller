@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 input[type=text]{
     margin: 0.2em;
     font-size: 110%;
@@ -21,62 +22,90 @@ input[type=radio]{
     height: 1em;
     
 }
+=======
+>>>>>>> littleImprov
 body{
-    background-color: black;
+    background-color: midnightblue;
     color: whitesmoke;
 }
-.diceType{
-    padding:  0.2em;
-}
-.diceType label{
-    width: 5em;
-    display: inline-block;
-}
-.diceType.radio label{
-    width: auto;
-}
-span.diceType{
-    text-align: left;
+#displayResult{
+    margin-bottom: 4rem;
 }
 #footer{
-   margin-top: 3em; 
-}
-div.diceResult{
-    display: inline-block;
+    position: fixed;
+    min-height: 2rem;
+    padding: 0.5rem 0 0.5rem 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: whitesmoke;
+    color: black;
+    text-align: center;
+    vertical-align: center;
 }
 
-.discipline{
+.disciplineClass{
     background-color: white;
-    padding: 0.1em;
     color:black;
 }
-
-.exhaustion{
+.assistClass{
+    background-color:lightgrey;
+    color:black;
+}
+.exhaustionClass{
     background-color: black;
     color:white;
 }
-
-.madness{
+.madnessClass{
     background-color: red;
     color:white;
 }
-
-.pain{
+.painClass{
     background-color:rebeccapurple;
     color:white;
 }
-
-.dominanceHi{
-    margin: 0.3em;
-    padding: 0.3em;
-    border-width: 1px;
-    border-color: grey;
-    border-style: outset;
+fieldset{
+    border: 0;
+}
+#ncasdiceroller label{
+    width: 5rem;
+    display: inline-block;
+}
+#ncasdiceroller .radio label{
+    width: auto;
+}
+input[type=text]{
+    width: 7rem;
+    font-size: 120%;
+}
+input[type=number]{
+    width: 2rem;
+    text-align: right;
+    font-size: 110%;
+    margin: 0 0.9rem;
+}
+input[type=button] {
+    font-size: 110%;
+}
+input[type=submit] {
+    background-color:gold;
+    padding: 0.3rem 0.8rem;
+    margin: 0.5rem;
+    font-size: 120%;
+}
+#displayResult > div{
+    border-bottom:whitesmoke 1px solid;
 }
 
+#displayResult > * > div{
+    margin-bottom: 1rem;
+}
+#winningDisplay{
+    margin-top: 1rem;
+}
 .winning{
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 130%;
 }
 .winner{
     color:greenyellow;
@@ -84,6 +113,7 @@ div.diceResult{
 .loser{
     color: brown;
 }
+<<<<<<< HEAD
 
 a {
     color:crimson;
@@ -101,3 +131,32 @@ a {
     text-align: center;
     vertical-align: center;
   }
+=======
+.dominanceHi{
+    border-width: 1px;
+    border-color: grey;
+    border-style: outset;
+    margin: 1rem auto;
+}
+#displayResult .disciplineClass
+, #displayResult .assistClass
+, #displayResult .madnessClass
+, #displayResult .painClass
+, #displayResult .exhaustionClass{
+    display: inline;
+    padding: 0.2rem;
+    
+}
+form, #diceDisplay{
+    display: inline-block;
+    vertical-align: top;
+}
+fieldset, #diceDisplay > div{
+    min-height: 23px;
+}
+#diceDisplay > div{
+    padding: 0.4em 0.8em;
+    margin-top: 0.3em;
+    border-radius: 0.4em;
+}
+>>>>>>> littleImprov
