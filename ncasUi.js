@@ -75,7 +75,7 @@ function displayDominance(){
         d.innerHTML = "<p>" + o.dominance.attribute + "</p>";
         return;        
     }
-    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"Class\">" + o.pool[o.dominance.attribute].txtArticle+o.pool[o.dominance.attribute].txt + " domina;</p>";
+    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"Class\">" + o.pool[o.dominance.attribute].txtArticle+o.pool[o.dominance.attribute].txt + " domina.</p>";
     d.innerHTML += o.dominance.txt;
 }
 

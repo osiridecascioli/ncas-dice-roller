@@ -116,24 +116,72 @@ function resetData(){
     o.time=0;
 }
 
+let sessionHash = ''
+
+handleSession();
+
+function handleSession(){
+    let pathName = window.location.search.slice(1);
+    //console.log('window.location.search is: ' + pathName);
+    sessionHash = pathName;
+    if( pathName == ''){
+        let date = new Date();
+        sessionHash = ((+date) + Math.random()* 100).toString(32)
+        //console.log('new session will be: ' + sessionHash);
+        pathName = 'session=' + sessionHash;
+        history.replaceState(null, pathName , '?' + pathName);
+    }
+    //console.log('Welcome to session ' + pathName)
+}
+
+const relayPeer = "https://gunjs.herokuapp.com/gun";
+const spaceVariable = "ncas-dice-roller";
+const gunSpace = Gun([ relayPeer ]).get(spaceVariable).get(sessionHash);
+
 //getResults from form to data 
 function getResults(formData){
     const rawData = getDataAndRoll(formData);
+
+    let date = new Date();
+    let nameDate = rawData["name"] + ((+date) + Math.random()* 100).toString(32)
+
     /*
     //you can mock data as example below
     const rawData = {
-        "discipline": 1,
-        "discipline_rolls": [3],
-        //"exhaustion": 1,
-        "exhaustion_rolls": [1],
+        "discipline": 2,
+        "discipline_rolls": [5,3],
         "pain": 1,
+        "pain_rolls": [4],
+        "exhaustion": 1,
+        "exhaustion_rolls": [1],
+        "assist": 0,
+        "assist_rolls": [0],
+        "pain": 6,4,2,
         "pain_rolls": [3],
         "etalent":2,
-        //"name": "pluto",
+        "name": "Edoardo",
+        //you can also 'forgot' some data, it should not break, I tested on my machine
     }
     */
-    
-    elaborateData(rawData);
+    //elaborateData(rawData);
+
+    let value = {
+        name : nameDate,
+        data: JSON.stringify(rawData),
+    };
+
+    gunSpace.set(value);
+}
+
+gunSpace.map().on( (value) => {
+    gunDisplay(value)
+})
+
+
+function gunDisplay(v){
+    if ("data" in v){
+        elaborateData(JSON.parse(v.data))
+    }
 }
 
 //elaborateData from rawData make NCaS calculation
@@ -141,15 +189,15 @@ function elaborateData(rawData){
 
     resetData();
 
+    setName(rawData);
+
     setDieRoll(rawData);
 
-    setStrength(rawData)
+    setExhaustionTalent(rawData);
+    
+    setStrength()
 
     setSuccesses();
-
-    setExhaustionTalent(rawData);
-
-    setName(rawData);
     
     setWinner();
 
@@ -162,7 +210,7 @@ function elaborateData(rawData){
 function setSuccesses(){
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
         if (!o.pool[pool[i]].rolls){
-            continue
+            continue;
         }
         for (let n = 0; n < o.pool[pool[i]].rolls.length; n++) {
             setSuccess(pool[i], o.pool[pool[i]].rolls[n]);
@@ -171,7 +219,7 @@ function setSuccesses(){
 }
 
 //setStrength set ALL pool strength
-function setStrength(rawData){
+function setStrength(){
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
         o.pool[pool[i]].str = getStrength(o.pool[pool[i]].rolls);
     }
@@ -183,7 +231,7 @@ function getDataAndRoll(formData){
     for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
         let n = Number(formData.get(pool[i]))
         rawData[pool[i]] = n;
-        rawData[pool[i]+"_rolls"] = getDieResult(pool[i], n);
+        rawData[pool[i]+"_rolls"] = getDieResult(n);
     }
     rawData.etalent = Number(formData.get("etalent"));
     rawData.name = formData.get("name");
@@ -249,7 +297,6 @@ function getDominance(c){
     if( !o.dominance.str || o.dominance.str == 0){
         return [c, getStrength(o.pool[c].rolls)];
     }
-    let max = 0;
     let [a, s] = [o.dominance.attribute, o.dominance.str];
     let aP = {rolls:[], str:0};
     let cP = {rolls:[], str:0};
@@ -257,34 +304,36 @@ function getDominance(c){
     [cP.rolls, cP.str] = copyPool(o.pool[c]);
     let debug = false;
     //debug = true;
+    let max = 0;
     while (max < 6){ //6 è un numero arbitrario
+        if (debug) console.log(a, c, aP, cP);
         if (!aP.rolls.length && !cP.rolls.length){
-            if (debug) console.log("le due serie di dadi sono vuote", a, c, aP, cP);
+            if (debug) console.log("le due serie di dadi sono vuote");
             return [c, getStrength(o.pool[c].rolls)];
         }
         if (aP.rolls.length && !cP.rolls.length){
-            if (debug) console.log("la nuova serie di dadi è vuota ",  a, c, aP, cP);
+            if (debug) console.log("la NUOVA serie di dadi è vuota");
             return [a, s];
         }
         if (!aP.rolls.length && cP.rolls.length){
-            if (debug) console.log("la vecchia serie di dadi è vuota ",  a, c, aP, cP);
+            if (debug) console.log("la VECCHIA serie di dadi è vuota");
             return [c, getStrength(o.pool[c].rolls)];
         }
         if (aP.rolls[0] > cP.rolls[0]){
-            if (debug) console.log("il primo valore VECCHIO è più alto",  a, c, aP, cP);
+            if (debug) console.log("il primo valore VECCHIO è più alto");
             return [a, s];
         }
         if (aP.rolls[0] < cP.rolls[0]){
-            if (debug) console.log("il primo valore NUOVO è più alto",  a, c, aP, cP);
+            if (debug) console.log("il primo valore NUOVO è più alto");
             return [c, getStrength(o.pool[c].rolls)];
         }
 
         if (aP.str > cP.str){
-            if (debug) console.log("la forza VECCHIA è più alta",  a, c, aP, cP);
+            if (debug) console.log("la forza VECCHIA è più alta");
             return [a, s];
         }
         if (aP.str < cP.str){
-            if (debug) console.log("la forza NUOVA è più alta",  a, c, aP, cP);
+            if (debug) console.log("la forza NUOVA è più alta");
             return [c, getStrength(o.pool[c].rolls)];
         }
         aP = nextDraw(aP);
@@ -346,7 +395,7 @@ function setWinner(){
         o.success.winnerString = "fallimento";
         o.success.winnerTxt += "loser\">perde ";
     }
-    o.success.winnerTxt = o.success.winnerTxt + "</span>" + o.success.player + " a " + o.success.master + ";";
+    o.success.winnerTxt = o.success.winnerTxt + "</span>" + o.success.player + " a " + o.success.master + ".";
 }
 
 //setExhaustionTalent check if exhaustion talent is selected and is mechanic
@@ -368,7 +417,7 @@ function setExhaustionTalent(rawData){
         o.etalentTxt = "Talento, uso Minore. Minimo "+ext+" successi.";
         return;
     }
-    o.success.player = o.success.player + ext;
+    o.success.player = o.success.player + Number(ext);
     o.etalentTxt = "Talento, uso Maggiore. +"+ext+" successi.";
 }
 
@@ -384,12 +433,11 @@ function setDieRoll(rawData){
 //parameters: formData=the data submitted, name=the name of the pool to be rolled
 function setDieResults(rawData, name){
     o.pool[name].rolls = rawData[name+"_rolls"];
-    //getDieResult(name, rawData[name]);
 }
 
-//getDieResult get the list of result for a pool, and also the strenght
-//parameters are name=the pool name, n=number of dice to be rolled
-function getDieResult(name, n){
+//getDieResult get the list of result for a pool
+//parameters n=number of die to be rolled
+function getDieResult(n){
     if (n < 1){
         return [];
     }
