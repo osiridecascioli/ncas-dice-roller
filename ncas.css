@@ -48,6 +48,13 @@ fieldset{
 #ncasdiceroller .radio label{
     width: auto;
 }
+#url{
+    width: auto;
+    font-size: 55%;
+}
+#sessione > button{
+    margin: 0 0.5rem;
+}
 input[type=text]{
     width: 7rem;
     font-size: 120%;

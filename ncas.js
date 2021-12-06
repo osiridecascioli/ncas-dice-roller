@@ -117,7 +117,6 @@ function resetData(){
 }
 
 let sessionHash = ''
-
 handleSession();
 
 function handleSession(){
@@ -132,6 +131,7 @@ function handleSession(){
         history.replaceState(null, pathName , '?' + pathName);
     }
     //console.log('Welcome to session ' + pathName)
+    displaySession();
 }
 
 const relayPeer = "https://gunjs.herokuapp.com/gun";
@@ -234,7 +234,8 @@ function getDataAndRoll(formData){
         rawData[pool[i]+"_rolls"] = getDieResult(n);
     }
     rawData.etalent = Number(formData.get("etalent"));
-    rawData.name = formData.get("name");
+    const date = new Date();
+    rawData.name = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" "+formData.get("name");
     return rawData;
 }
 

@@ -8,6 +8,24 @@ function display(){
     displayDominance();
 }
 
+function displaySession(){
+    let d = document.getElementById("url");
+    d.value = window.location.href;
+}
+
+function urlCopy(){
+    let d = document.getElementById("url");
+    d.focus();
+    d.select();
+    try {
+        d.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        navigator.clipboard.writeText(d.value.toString());
+    } catch (error) {
+        console.log("urlcopy: " + error);
+    }
+}
+
 //setNewDisplay
 function setNewDisplay(){
     const dT = new Date();

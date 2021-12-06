@@ -15,17 +15,13 @@
       type="text/css"
       rel="Stylesheet"
     />
-  
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-    <script type="text/javascript" src="./ncas.js?TAGID=0.0.20"></script>
-    <script type="text/javascript" src="./ncasUi.js?TAGID=0.0.20"></script>
-    
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
   </head>
 
   <body>
     <h1>Salve risvegliato,</h1>
+    <h2 id="sessione">sessione <input id="url" type="text" /><button onclick="urlCopy();">Copia</input></h2>
     <form id="ncasdiceroller">
       <fieldset>
         <label for="name">Nome</label>
@@ -68,6 +64,9 @@
       <a href="https://grumpybearstuff.com/" target="_blank">Non Cedere al Sonno</a> edizione italiana sarà pubblicato in italia da <a href="https://grumpybearstuff.com/" target="_blank">GrumpyBear Stuff</a>.
     </div>
   </body>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script type="text/javascript" src="./ncasUi.js?TAGID=0.0.20"></script>
+  <script type="text/javascript" src="./ncas.js?TAGID=0.0.20"></script>
   <script type="text/javascript">
     const form = document.forms[0];
     form.addEventListener("submit", function(event) {
