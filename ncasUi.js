@@ -24,6 +24,15 @@ function urlCopy(){
     } catch (error) {
         console.log("urlcopy: " + error);
     }
+    if (navigator.share) {
+        navigator.share({
+          title: document.title,
+          text: "Condividi sessione",
+          url: window.location.href
+        })
+        .then(() => console.log('Successful share'))
+        .catch(error => console.log('Error sharing:', error));
+      }
 }
 
 //setNewDisplay

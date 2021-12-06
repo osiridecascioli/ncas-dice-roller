@@ -140,11 +140,8 @@ const gunSpace = Gun([ relayPeer ]).get(spaceVariable).get(sessionHash);
 
 //getResults from form to data 
 function getResults(formData){
+
     const rawData = getDataAndRoll(formData);
-
-    let date = new Date();
-    let nameDate = rawData["name"] + ((+date) + Math.random()* 100).toString(32)
-
     /*
     //you can mock data as example below
     const rawData = {
@@ -164,6 +161,7 @@ function getResults(formData){
     }
     */
     //elaborateData(rawData);
+    let nameDate =  Date.now()+ rawData["name"];
 
     let value = {
         name : nameDate,
@@ -173,15 +171,12 @@ function getResults(formData){
     gunSpace.set(value);
 }
 
-gunSpace.map().on( (value) => {
-    gunDisplay(value)
+gunSpace.map().once( (v) => {
+    gunDisplay(v)
 })
 
-
 function gunDisplay(v){
-    if ("data" in v){
-        elaborateData(JSON.parse(v.data))
-    }
+    elaborateData(JSON.parse(v.data))
 }
 
 //elaborateData from rawData make NCaS calculation
