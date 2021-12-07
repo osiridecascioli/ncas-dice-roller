@@ -1,294 +1,374 @@
-const form = document.forms[0];
-
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    /*
-    for (const formElement of formData) {
-        //console.log(formElement);
-    }
-    */
-    getResults(formData);
-});
-
-const dominance = {
-    attribute: "",
-    value: 0
-}
 const o = {
-    discipline:[],
-    disciplineStrenght:0,
-    disciplineTxt: "La Disciplina",
-    madness:[],
-    madnessStrenght:0,
-    madnessTxt: "La Pazzia",
-    exhaustion:[],
-    exhaustionStrenght:0,
-    exhaustionTxt: "Lo Sfinimento",
-    pain:[],
-    painStrenght:0,
-    painTxt: "Il Dolore",
-    assist:[],
-    assistStrenght:0,
-    pSuccess:0,
-    mSuccess:0,
+    pool:{
+        discipline:{
+            rolls:[],
+            txtArticle: "La ",
+            txt:"Disciplina",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        madness:{
+            rolls:[],
+            txtArticle: "La ",
+            txt:"La Pazzia",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        exhaustion:{
+            rolls:[],
+            txtArticle: "Lo ",
+            txt:"Sfinimento",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        assist:{
+            rolls:[],
+            txtArticle: "L'",
+            txt:"Aiuto",
+            str:0,
+            player:true,
+            dominance:false
+        },
+        pain:{
+            rolls:[],
+            txtArticle: "Il ",
+            txt:"Dolore",
+            str:0,
+            player:false,
+            dominance:true
+        },
+    },
+    success:{
+        player:0,
+        master:0,
+        winnerString:"",
+        winnerTxt:""
+    },
     etalentTxt:"",
-    winner:"",
-    winnerTxt: "",
-    alert:"",
-    dominance: dominance,
-    resultTxt: "",
-    playerStat: ["discipline", "madness", "exhaustion", "assist"],
-    masterStat: "pain"
+    dominance: {
+        attribute: "",
+        str: 0,
+        txt: "",
+    },
+    name: "",
+    time:0
 };
 
 function resetData(){
-    o.discipline=[];
-    o.disciplineStrenght=0;
-    o.madness=[];
-    o.madnessStrenght=0;
-    o.exhaustion=[];
-    o.exhaustionStrenght=0;
-    o.pain=[];
-    o.painStrenght=0;
-    o.assist=[];
-    o.assistStrenght=0;
-    o.pSuccess=0;
-    o.mSuccess=0;
+    o.pool={
+        discipline:{
+            rolls:[],
+            txtArticle: "La ",
+            txt:"Disciplina",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        madness:{
+            rolls:[],
+            txtArticle: "La ",
+            txt:"Pazzia",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        exhaustion:{
+            rolls:[],
+            txtArticle: "Lo ",
+            txt:"Sfinimento",
+            str:0,
+            player:true,
+            dominance:true
+        },
+        assist:{
+            rolls:[],
+            txtArticle: "L'",
+            txt:"Aiuto",
+            str:0,
+            player:true,
+            dominance:false
+        },
+        pain:{
+            rolls:[],
+            txtArticle: "Il ",
+            txt:"Dolore",
+            str:0,
+            player:false,
+            dominance:true
+        }
+    };
     o.etalentTxt="";
-    o.winner="";
-    o.winnerTxt="";
-    o.alert="";
-    o.dominance.attribute="";
-    o.dominance.value=0;
-    o.resultTxt = "";
+    o.success= {
+        player:0,
+        master:0,
+        winnerString:"",
+        winnerTxt:""
+    };
+    o.dominance= {
+        attribute: "",
+        value: 0,
+        txt:""
+    };
+    o.name = "";
+    o.time=0;
 }
 
+let sessionHash = ''
+handleSession();
+
+function handleSession(){
+    let pathName = window.location.search.slice(1);
+    //console.log('window.location.search is: ' + pathName);
+    sessionHash = pathName;
+    if( pathName == ''){
+        let date = new Date();
+        sessionHash = ((+date) + Math.random()* 100).toString(32)
+        //console.log('new session will be: ' + sessionHash);
+        pathName = 'session=' + sessionHash;
+        history.replaceState(null, pathName , '?' + pathName);
+    }
+    //console.log('Welcome to session ' + pathName)
+    displaySession();
+}
+
+const relayPeer = "https://gunjs.herokuapp.com/gun";
+const spaceVariable = "ncas-dice-roller";
+const gunSpace = Gun([ relayPeer ]).get(spaceVariable).get(sessionHash);
+
+//getResults from form to data 
 function getResults(formData){
+
+    const rawData = getDataAndRoll(formData);
+    /*
+    //you can mock data as example below
+    const rawData = {
+        "discipline": 2,
+        "discipline_rolls": [5,3],
+        "pain": 1,
+        "pain_rolls": [4],
+        "exhaustion": 1,
+        "exhaustion_rolls": [1],
+        "assist": 0,
+        "assist_rolls": [0],
+        "pain": 6,4,2,
+        "pain_rolls": [3],
+        "etalent":2,
+        "name": "Edoardo",
+        //you can also 'forgot' some data, it should not break, I tested on my machine
+    }
+    */
+    //elaborateData(rawData);
+    let nameDate =  Date.now()+ rawData["name"];
+
+    let value = {
+        name : nameDate,
+        data: JSON.stringify(rawData),
+    };
+
+    gunSpace.set(value);
+}
+
+gunSpace.map().once( (v) => {
+    gunDisplay(v)
+})
+
+function gunDisplay(v){
+    elaborateData(JSON.parse(v.data))
+}
+
+//elaborateData from rawData make NCaS calculation
+function elaborateData(rawData){
+
     resetData();
 
-    dieRoll(formData);
+    setName(rawData);
 
-    /*
-    o.discipline=[6];
-    o.disciplineStrenght=1;
-    o.madness=[5,4];
-    o.madnessStrenght=1;
-    o.exhaustion=[5,5,4];
-    o.exhaustionStrenght=2;
-    o.pain=[5,1,1];
-    o.painStrenght=1;
-    */
+    setDieRoll(rawData);
 
-    getExhaustion(formData);
+    setExhaustionTalent(rawData);
     
-    getWinner();
+    setStrength()
 
-    getDominance();
+    setSuccesses();
+    
+    setWinner();
 
-    getTextRes();
+    setDominance();
 
     display();
 }
 
-function display(){
-    
-    displayDice();
-
-    displayWinner();
-
-    displayDominance();
-
-    displayTalent();
-}
-
-function displayWinner(){
-    let d = getNcasE("winner", "ncasDiceRoller");
-    d.innerHTML = o.winnerTxt;
-}
-
-function displayDice(){
-    for (const [key, value] of Object.entries(o.playerStat)) {
-        //console.log(key, value);
-        displayDie(value);
+//setSuccesses calculate player and master success
+function setSuccesses(){
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        if (!o.pool[pool[i]].rolls){
+            continue;
+        }
+        for (let n = 0; n < o.pool[pool[i]].rolls.length; n++) {
+            setSuccess(pool[i], o.pool[pool[i]].rolls[n]);
+        }
     }
-    displayDie(o.masterStat);
 }
 
-function displayTalent(){
-    let d = getNcasE("talent", "ncasDiceRoller");
-    d.innerHTML = o.etalentTxt;
-}
-
-function displayDominance(){
-    let d = getNcasE("dominance", "ncasDiceRoller");
-    d.innerHTML = "<p class=\"dominanceHi "+o.dominance.attribute+"\">" + o[o.dominance.attribute+"Txt"] + " domina;</p>";
-    d.innerHTML += o.resultTxt;
-}
-
-function displayDie(name){
-    let d = getNcasE(name ,"dice");
-    d.innerHTML = o[name];
-}
-
-function getNcasE(name, parent){
-    let d = document.getElementById(name+"_result");
-    if (d){
-        return d;
+//setStrength set ALL pool strength
+function setStrength(){
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        o.pool[pool[i]].str = getStrength(o.pool[pool[i]].rolls);
     }
-    let dP = document.getElementById(parent);
-    if (document.getElementById(name) && document.getElementById(name).parentNode){
-        dP = document.getElementById(name).parentNode;
-    }
-    d = document.createElement('div');
-    d.id = name+"_result";
-    d.className = parent+"Result";
-    dP.appendChild(d);
-    //dP.insertBefore(d, dP.childNodes[0]);
-    return d;
 }
 
-function getTextRes(){
-    o.resultTxt += "<p>Indipendentemente dal "+o.winner+", la situazione ";
+//getDataAndRoll return simple obj with the form data and rolled die
+function getDataAndRoll(formData){
+    const rawData = {};
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        let n = Number(formData.get(pool[i]))
+        rawData[pool[i]] = n;
+        rawData[pool[i]+"_rolls"] = getDieResult(n);
+    }
+    rawData.etalent = Number(formData.get("etalent"));
+    const date = new Date();
+    rawData.name = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" "+formData.get("name");
+    return rawData;
+}
+
+//setName set player name
+function setName(rawData){
+    if (!('name' in rawData)){
+        o.name = new Date().getTime();
+        return;
+    }
+    o.name = rawData["name"];
+}
+
+//setDominanceTxt from a calculated Dominance, set the rule info text regarding the pool dominance and effects
+function setDominanceTxt(){
+    o.dominance.txt += "<p>Indipendentemente dal " + o.success.winnerString + ", la situazione ";
     switch (o.dominance.attribute){
         case "discipline":
-            o.resultTxt += "rimane sotto controllo (o, per lo meno, non degenera ulteriormente nel caos) e l'uso delle proprie abilità e della propria concentrazione sono predominanti.";
-            o.resultTxt += "</p><p>";
-            o.resultTxt += "Riduci di 1 il valore di Sfinimento attuale, oppure recuperare una delle Reazioni, liberando uno dei riquadri di Reazione sulla scheda (pagina 18). Non sei obbligato a sfruttare questo vantaggio: a volte vorrai tenere il valore di Sfinimento così com'è al momento.";
+            o.dominance.txt += "rimane sotto controllo (o, per lo meno, non degenera ulteriormente nel caos) e l'uso delle proprie abilità e della propria concentrazione sono predominanti.";
+            o.dominance.txt += "</p><p>";
+            o.dominance.txt += "Riduci di 1 il valore di Sfinimento attuale, oppure recuperare una delle Reazioni, liberando uno dei riquadri di Reazione sulla scheda (pagina 18). Non sei obbligato a sfruttare questo vantaggio: a volte vorrai tenere il valore di Sfinimento così com'è al momento.";
             break;
         case "exhaustion":
-            o.resultTxt += "stressa le tue risorse e da un'occasione per affrontare l'insonnia (ed il disperato desiderio di riposare).";
-            o.resultTxt += "</p><p>";
-            o.resultTxt += "Incrementa ulteriormente lo Sfinimento di 1, anche quando lo hai già incrementato volontariamente nello stesso tiro di dadi.";
+            o.dominance.txt += "stressa le tue risorse e da un'occasione per affrontare l'insonnia (ed il disperato desiderio di riposare).";
+            o.dominance.txt += "</p><p>";
+            o.dominance.txt += "Incrementa ulteriormente lo Sfinimento di 1, anche quando lo hai già incrementato volontariamente in questo tiro di dadi.";
             break;
         case "madness":
-            o.resultTxt += "ti mette seriamente sotto sforzo psicologico o emotivo. Non solo: la situazione si fa inevitabilmente più caotica, e puoi trovarti ad essere vittima dei rischi che ti sei preso.";
-            o.resultTxt += "</p><p>";
-            o.resultTxt += "Attiva una delle Reazioni. Puoi scegliere quale dei riquadri di Reazione disponibili (vuoti) vuoi riempire, permettendoti di scegliere tra la reazione Lotta o la reazione Fuggi.";
+            o.dominance.txt += "ti mette seriamente sotto sforzo psicologico o emotivo. Non solo: la situazione si fa inevitabilmente più caotica, e puoi trovarti ad essere vittima dei rischi che ti sei preso.";
+            o.dominance.txt += "</p><p>";
+            o.dominance.txt += "Attiva una delle Reazioni. Puoi scegliere quale dei riquadri di Reazione disponibili (vuoti) vuoi riempire, permettendoti di scegliere tra la reazione Lotta o la reazione Fuggi.";
             break;
         case "pain":
-            o.resultTxt += "richiede che paghi un prezzo. Se hai perso il conflitto, la sconfitta stessa può essere un prezzo adeguato (a seconda di quanto schiacciante è la sconfitta), ma se invece hai vinto, questa vittoria esige qualcosa in cambio dal vincitore. Per farla breve, quando il Dolore Domina... beh, Domina il Dolore!";
-            o.resultTxt += "</p><p>";
-            o.resultTxt += "Aggiungi una Moneta di Disperazione alla Coppa della Disperazione (vedi oltre, a pagina 26, per saperne di più sulle Monete).";
+            o.dominance.txt += "richiede che paghi un prezzo. ";
+            if (o.success.winnerString == "successo"){
+                o.dominance.txt += "Questa vittoria esige qualcosa in cambio dal vincitore. "
+            } else{
+                o.dominance.txt += "L'aver perso il conflitto potrebbe essere un prezzo adeguato (a seconda di quanto sia schiacciante). "
+            }
+            o.dominance.txt += "In ogni caso, quando il Dolore Domina... beh, Domina il Dolore!";
+            o.dominance.txt += "</p><p>";
+            o.dominance.txt += "Aggiungi una Moneta di Disperazione alla Coppa della Disperazione (vedi oltre, a pagina 26, per saperne di più sulle Monete).";
             break;
     }
-    o.resultTxt += "</p>";
+    o.dominance.txt += "</p>";
 }
 
-function getDominance(){
-    o.dominance.attribute = "pain";
-    o.dominance.value = o.pain[0]
-
-    compareDominance("exhaustion");
-
-    compareDominance("madness");
-
-    compareDominance("discipline");
-    //console.log(o.dominance);
+//setDominance calculate pool dominance
+function setDominance(){
+    for (let i = 0, pool = Object.keys(o.pool).reverse(); i < pool.length; i++) {
+        if( !o.pool[pool[i]].dominance ){
+            continue;
+        }        
+        [o.dominance.attribute, o.dominance.str] = getDominance(pool[i]);
+    }
+    setDominanceTxt();
 }
 
-function compareDominance(compare){
-    //console.log(compare);
-    if(o[compare].length < 1){
-        //console.log("il comparato", compare, "è troppo corto");
-        return;
+//getDominance return dominance pool and strenght
+function getDominance(c){
+    if( !o.dominance.str || o.dominance.str == 0){
+        return [c, getStrength(o.pool[c].rolls)];
     }
-
-    if (o.dominance.value > o[compare][0]){
-        //console.log("il primo valore VECCHIO è più alto", o.dominance.value,o[compare][0]);
-        return;
-    }
-
-    if (o.dominance.value < o[compare][0]){
-        //console.log("il primo valore NUOVO è più alto", o.dominance.value,o[compare][0]);
-        o.dominance.attribute = compare;
-        o.dominance.value = o[compare][0];
-        return;
-    }
-
-    let actualD = o.dominance.attribute;
-    //equal case
-    if (o[actualD+"Strenght"] > o[compare+"Strenght"] ){
-        //console.log("il numero di dadi più alto è maggiore");
-        return;
-    } else if (o[actualD+"Strenght"] < o[compare+"Strenght"] ){
-        //console.log("il numero di dadi più alto è minore");
-        o.dominance.attribute = compare;
-        o.dominance.value = o[compare][0];
-        return;
-    } 
-    
-    //console.log("this gonna be difficult");
+    let [a, s] = [o.dominance.attribute, o.dominance.str];
+    let aP = {rolls:[], str:0};
+    let cP = {rolls:[], str:0};
+    [aP.rolls, aP.str] = copyPool(o.pool[a]);
+    [cP.rolls, cP.str] = copyPool(o.pool[c]);
+    let debug = false;
+    //debug = true;
     let max = 0;
-    let newObj = {};
-    newObj[actualD] = removeUpper(o[actualD]);
-    newObj[compare] = removeUpper(o[compare]);
     while (max < 6){ //6 è un numero arbitrario
-        if (thisIsMad(newObj, actualD, compare)){
-            return;
+        if (debug) console.log(a, c, aP, cP);
+        if (!aP.rolls.length && !cP.rolls.length){
+            if (debug) console.log("le due serie di dadi sono vuote");
+            return [c, getStrength(o.pool[c].rolls)];
         }
-        newObj[actualD] = removeUpper(newObj[actualD]);
-        newObj[compare] = removeUpper(newObj[compare]);
+        if (aP.rolls.length && !cP.rolls.length){
+            if (debug) console.log("la NUOVA serie di dadi è vuota");
+            return [a, s];
+        }
+        if (!aP.rolls.length && cP.rolls.length){
+            if (debug) console.log("la VECCHIA serie di dadi è vuota");
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+        if (aP.rolls[0] > cP.rolls[0]){
+            if (debug) console.log("il primo valore VECCHIO è più alto");
+            return [a, s];
+        }
+        if (aP.rolls[0] < cP.rolls[0]){
+            if (debug) console.log("il primo valore NUOVO è più alto");
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+
+        if (aP.str > cP.str){
+            if (debug) console.log("la forza VECCHIA è più alta");
+            return [a, s];
+        }
+        if (aP.str < cP.str){
+            if (debug) console.log("la forza NUOVA è più alta");
+            return [c, getStrength(o.pool[c].rolls)];
+        }
+        aP = nextDraw(aP);
+        cP = nextDraw(cP);
+        if (debug) console.log("altro giro altra corsa!!", max);
         max++;
     };
-    //console.log("Dominio da controllare a mano");
-    o.dominance.attribute +="<br />Dominio da controllare a mano.";
-    o.dominance.value = 0;
+    return ["cazzi", -1]
 }
 
-function thisIsMad(newObj, actualD, compare){
-    if (!newObj[actualD].length && !newObj[compare].length){
-        //le due serie di dadi sono vuote
-        return true;
-    }else if (newObj[actualD].length &&  !newObj[compare].length){
-        //la nuova serie di dadi è vuota 
-        return true;
-    }else if (!newObj[actualD].length && newObj[compare].length){
-        //la vecchia serie di dadi è vuota
-        o.dominance.attribute = compare;
-        o.dominance.value = o[compare][0];
-        return true;
-    }
-    if (newObj[actualD][0] > newObj[compare][0]){
-        //il dado successivo vecchio è più alto
-        return true;
-    }else if (newObj[actualD][0] < newObj[compare][0]){
-        //il dado successivo nuovo è più alto
-        o.dominance.attribute = compare;
-        o.dominance.value = o[compare][0];
-        return true;
-    }
-    if (getStrength(newObj[actualD]) > getStrength(newObj[compare])){
-        //il numero di dadi più alti vecchio è più alto
-        return true;
-    } else if (getStrength(newObj[actualD]) < getStrength(newObj[compare])){
-        //il numero di dadi più alti nuovi è più alto
-        o.dominance.attribute = compare;
-        o.dominance.value = o[compare][0];
-        return true;
-    }
-    return false;
-}
-
-function removeUpper(arr){
-    if (!arr || !arr.length){
-        return [];
-    }
-    let v = arr[0];
-    arr = arr.sort();
-    let aN = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] >= v ){
-            arr.sort().reverse();
-            return aN.reverse();
+//nextDraw remove highest value/s from pool and recalculate strenght 
+function nextDraw(p){
+    let v = p.rolls[0];
+    let nD = {rolls:[], str:0};
+    for (let i = 0; i < p.rolls.length; i++) {
+        if (p.rolls[i] >= v ){
+            continue;
         }
-        aN.push(arr[i]);
+        nD.rolls.push(p.rolls[i]);
     }
+    nD.str = getStrength(nD.rolls);
+    return nD;
 }
 
+//copyPool copy the pool
+function copyPool(p){
+    if (!p || !p.rolls || !p.rolls.length){
+        return [[], 0];
+    }
+    let a = [];
+    for (let i = 0; i < p.rolls.length; i++) {
+        a.push(p.rolls[i]);
+    }
+    return [a, p.str];
+}
 
+//getStrength return the number of time the maximum number appear in an reverse sorted list ex [6,6,4,1] will return 2 
 function getStrength(n){
-    if(!n.length){
+    if(!n || !n.length){
         return 1;
     }
     let m = 0;
@@ -298,92 +378,93 @@ function getStrength(n){
         }
         m++;
     }
-    return m;
+    return Number(m);
 }
 
-function getWinner(){
-    o.winnerTxt = "Il giocatore <span class=\"winning ";
-    if (o.pSuccess >= o.mSuccess){
-        o.winner = "successo";
-        o.winnerTxt += "winner\">vince ";
+//setWinner read the number of master and player success and set the winner if player >= master
+function setWinner(){
+    o.success.winnerTxt = "Il giocatore <span class=\"winning ";
+    if (o.success.player >= o.success.master){
+        o.success.winnerString = "successo";
+        o.success.winnerTxt += "winner\">vince ";
     }else{
-        o.winner = "fallimento";
-        o.winnerTxt += "loser\">perde ";
+        o.success.winnerString = "fallimento";
+        o.success.winnerTxt += "loser\">perde ";
     }
-    o.winnerTxt = o.winnerTxt + "</span>" + o.pSuccess + " a " + o.mSuccess + ";";
-    
-    //console.log(o.winner);
+    o.success.winnerTxt = o.success.winnerTxt + "</span>" + o.success.player + " a " + o.success.master + ".";
 }
 
-function getExhaustion(formData){
-    let etalent = Number(formData.get("etalent"));
-    if (etalent == 0){
+//setExhaustionTalent check if exhaustion talent is selected and is mechanic
+function setExhaustionTalent(rawData){
+    let etalent = rawData["etalent"];
+    if (!etalent || etalent == 0){
         return;
     }
-    let ext = Number(formData.get("exhaustion"));
-    if (ext < 1){
+    etalent = Number(etalent);
+    let ext = rawData["exhaustion"];
+    if (!ext || ext == 0 ){
         o.etalentTxt = "<br />Non puoi usare il Talento di Sfinimento senza avere Sfinimento.";
         return;
     }
     if (etalent == 1){
-        if (o.pSuccess < ext){
-            o.pSuccess = ext;
+        if (o.success.player < ext){
+            o.success.player = ext;
         }
-        o.etalentTxt = "Uso Minore. Minimo "+ext+" successi.";
-    } else if (etalent == 2){
-        o.pSuccess = o.pSuccess + etalent;
-        o.etalentTxt = "Uso Maggiore. +"+ext+" successi.";
+        o.etalentTxt = "Talento, uso Minore. Minimo "+ext+" successi.";
+        return;
     }
-    //console.log(etalentTxt);
+    o.success.player = o.success.player + Number(ext);
+    o.etalentTxt = "Talento, uso Maggiore. +"+ext+" successi.";
 }
 
-function dieRoll(formData){
-    for (let i = 0; i < o.playerStat.length; i++) {
-        parseName(formData, o.playerStat[i]);
-        //console.log("Dice: "+playerStat[i] + "; form: "+formData.get(playerStat[i]));
+//setDieRoll set rolled die for all the pool (ex. exhaustion, pain, madness)
+//parameters: rawData=the data submitted and rolled
+function setDieRoll(rawData){
+    for (let i = 0, pool = Object.keys(o.pool); i < pool.length; i++) {
+        setDieResults(rawData, pool[i]);
     }
-    //console.log("Dice: E"+o.exhaustion + "; form: "+formData.get("exhaustion"));
-    parseName(formData, o.masterStat);
 }
 
-function parseName(formData, name){
-    o[name] = getResult(name, Number(formData.get(name)))
-    //console.log("Dice: ",name, o[name], "form: "+formData.get(name));
+//setDieResults set the result of die rolled
+//parameters: formData=the data submitted, name=the name of the pool to be rolled
+function setDieResults(rawData, name){
+    o.pool[name].rolls = rawData[name+"_rolls"];
 }
 
-function getResult(name, token){
-    if (token < 1){
+//getDieResult get the list of result for a pool
+//parameters n=number of die to be rolled
+function getDieResult(n){
+    if (n < 1){
         return [];
     }
-    //console.log("getResult name: "+name+"; token: "+token+";")
     let results = [];
-    for (let i = 0; i < token; i++) {
-        let n = Rd6();
-        setSuccess(name, n);
-        //console.log("getRndInteger name: "+name+"; token: "+n+";");
-        results.push(n);
+    for (let i = 0; i < n; i++) {
+        let result = Rd6();
+        results.push(result);
     }
     results.sort().reverse();
-    o[name+"Strenght"] = getStrength(results);
-    //console.log(results);
     return results;
 }
 
+//setSuccess calculate the number of success for player or for master
+//parameters are name=name of the pool (ex. madness, pain) n=the number aka the number the die rolled
 function setSuccess(name, n){
     if ( n > 3)
         return;
 
-    if ( o.playerStat.includes(name)){
-        o.pSuccess++; 
-    } else if (name == "pain"){
-        o.mSuccess++;
+    if (o.pool[name].player){
+        o.success.player++;
+        return;
     }
+    o.success.master++;
 }
 
+//Rd6 return random integer between 1 and 6
 function Rd6(){
     return getRndInteger(1, 7);
 }
 
+//getRndInteger return random integer
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
